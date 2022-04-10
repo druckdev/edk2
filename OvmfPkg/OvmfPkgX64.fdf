@@ -405,9 +405,33 @@ INF  MdeModulePkg/Universal/Variable/RuntimeDxe/VariableRuntimeDxe.inf
 #
 !include OvmfPkg/OvmfTpmDxe.fdf.inc
 
-INF DxeRootkitPkg/rootkit/rootkit.inf
-INF uefi-driver/uefi_driver.inf
-INF DxeRootkitPkg/payload/payload.inf
+################################################################################
+
+[FV.PAYLOADEFV]
+FvForceRebase      = FALSE
+FvNameGuid         = 7CB8BDC9-F8EB-4F34-AAEA-3EE4AF6516A1
+BlockSize          = 0x10000
+FvAlignment        = 16
+ERASE_POLARITY     = 1
+MEMORY_MAPPED      = TRUE
+STICKY_WRITE       = TRUE
+LOCK_CAP           = TRUE
+LOCK_STATUS        = TRUE
+WRITE_DISABLED_CAP = TRUE
+WRITE_ENABLED_CAP  = TRUE
+WRITE_STATUS       = TRUE
+WRITE_LOCK_CAP     = TRUE
+WRITE_LOCK_STATUS  = TRUE
+READ_DISABLED_CAP  = TRUE
+READ_ENABLED_CAP   = TRUE
+READ_STATUS        = TRUE
+READ_LOCK_CAP      = TRUE
+READ_LOCK_STATUS   = TRUE
+
+
+INF  DxeRootkitPkg/rootkit/rootkit.inf
+INF  DxeRootkitPkg/payload/payload.inf
+INF  uefi-driver/uefi_driver.inf
 
 ################################################################################
 
