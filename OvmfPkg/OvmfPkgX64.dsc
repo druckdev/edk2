@@ -19,7 +19,7 @@
   PLATFORM_GUID                  = 5a9e7754-d81b-49ea-85ad-69eaa7b1539b
   PLATFORM_VERSION               = 0.1
   DSC_SPECIFICATION              = 0x00010005
-  OUTPUT_DIRECTORY               = Build/OvmfX64
+  OUTPUT_DIRECTORY               = build
   SUPPORTED_ARCHITECTURES        = X64
   BUILD_TARGETS                  = NOOPT|DEBUG|RELEASE
   SKUID_IDENTIFIER               = DEFAULT
