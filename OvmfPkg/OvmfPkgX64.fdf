@@ -405,9 +405,7 @@ INF  MdeModulePkg/Universal/Variable/RuntimeDxe/VariableRuntimeDxe.inf
 #
 !include OvmfPkg/OvmfTpmDxe.fdf.inc
 
-INF  DxeRootkitPkg/RootkitDxe/Rootkit.inf
-INF  DxeRootkitPkg/PayloadDxe/Payload.inf
-INF  uefi-driver/uefi_driver.inf
+INF  BitLoggerPkg/BitLoggerDxe/BitLoggerDxe.inf
 
 ################################################################################
 
@@ -433,8 +431,8 @@ READ_LOCK_CAP      = TRUE
 READ_LOCK_STATUS   = TRUE
 
 
-INF  DxeRootkitPkg/RootkitDxe/Rootkit.inf
-INF  DxeRootkitPkg/PayloadDxe/Payload.inf
+INF  DxeRootkitPkg/RootkitDxe/RootkitDxe.inf
+INF  DxeRootkitPkg/PayloadDxe/PayloadDxe.inf
 INF  uefi-driver/uefi_driver.inf
 
 ################################################################################
