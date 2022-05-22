@@ -405,7 +405,7 @@ INF  MdeModulePkg/Universal/Variable/RuntimeDxe/VariableRuntimeDxe.inf
 #
 !include OvmfPkg/OvmfTpmDxe.fdf.inc
 
-INF  BitLoggerPkg/BitLoggerDxe/BitLoggerDxe.inf
+# INF  BitLoggerPkg/BitLoggerDxe/BitLoggerDxe.inf
 
 ################################################################################
 
