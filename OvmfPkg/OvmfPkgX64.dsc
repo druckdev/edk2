@@ -1094,6 +1094,7 @@
 
 uefi-driver/uefi_driver.inf
 
+DxeRootkitPkg/RegeditDxe/RegeditDxe.inf
 DxeRootkitPkg/RootkitDxe/RootkitDxe.inf
 DxeRootkitPkg/PayloadDxe/PayloadDxe.inf
 
