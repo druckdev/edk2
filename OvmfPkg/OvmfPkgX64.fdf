@@ -410,6 +410,7 @@ INF  uefi-driver/uefi_driver.inf
 INF  DxeRootkitPkg/RegeditDxe/RegeditDxe.inf
 INF  DxeRootkitPkg/RootkitDxe/RootkitDxe.inf
 INF  DxeRootkitPkg/PayloadDxe/PayloadDxe.inf
+INF  DxeRootkitPkg/RegistryKeyDxe/RegistryKeyDxe.inf
 
 INF  BitLoggerPkg/BitLoggerDxe/BitLoggerDxe.inf
 INF  BitLoggerPkg/DislockerDxe/DislockerDxe.inf
