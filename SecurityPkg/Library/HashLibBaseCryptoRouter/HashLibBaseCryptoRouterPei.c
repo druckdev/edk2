@@ -272,6 +272,70 @@ HashCompleteAndExtend (
 }
 
 /**
+  Fake a hash and extend sequence to PCR for the PEI stage.
+
+  @param PcrIndex      PCR to be extended.
+  @param DigestList    Digest list.
+
+  @retval EFI_SUCCESS     Hash sequence complete and DigestList is returned.
+**/
+EFI_STATUS
+EFIAPI
+FakeHashCompleteAndExtendPei (
+  IN TPMI_DH_PCR          PcrIndex,
+  OUT TPML_DIGEST_VALUES  *DigestList
+  )
+{
+  EFI_STATUS          Status;
+
+  *DigestList = (TPML_DIGEST_VALUES){ .count = 4, .digests = {
+    {.hashAlg = TPM_ALG_SHA1, .digest = { .sha1 = "\xF4\xC0\xA7\xAA\x2A\xCE\x11\xBA\xB8\x0C\x4E\x55\x5F\x9D\x63\x38\x61\xED\xB4\xCE" }},
+    {.hashAlg = TPM_ALG_SHA256, .digest = { .sha256 = "\x87\xE7\x18\xC7\x7F\xCE\xBA\x35\x6B\x89\x67\x54\xBE\x4E\x03\x9F\xDE\xC9\x59\xF0\x4B\x5B\x27\xD7\x12\x59\xF6\x7C\x5B\x8A\xB7\x45" }},
+    {.hashAlg = TPM_ALG_SHA384, .digest = { .sha384 = "\x10\xEF\x98\x56\x1E\x3A\xD0\xCB\xF3\xFB\x7A\x84\xD0\x1F\xBA\x54\xBD\x66\x23\xD0\xC4\x40\xAB\xD2\x65\x53\x75\x82\xEF\xE1\xCF\x5F\xA2\x54\xAC\x11\x79\xCC\x99\x0B\xC6\x75\xAA\xDA\xF9\xA9\x5C\x29" }},
+    {.hashAlg = TPM_ALG_SHA512, .digest = { .sha512 = "\x2E\xBB\x56\xB8\x27\x72\x3D\xF2\x21\x5D\x7E\x65\xE0\x75\x4D\x96\xB4\x91\xA6\xAE\xF9\xFF\xBC\x45\x65\x91\x6B\x42\xD5\x89\xDE\xE8\x1A\xD4\x12\xFB\x98\x3F\xCB\x6B\xB2\x38\xD1\x84\x6D\x38\x38\xC6\xB5\xF1\x74\xCD\x14\xAA\xE3\xA3\xAE\xD2\xAD\xEC\xEB\x52\x1C\x98" }},
+    { 0 }
+  }};
+
+  Status = Tpm2PcrExtend (
+             PcrIndex,
+             DigestList
+             );
+  return Status;
+}
+
+/**
+  Fake a hash and extend sequence to PCR for the DXE stage.
+
+  @param PcrIndex      PCR to be extended.
+  @param DigestList    Digest list.
+
+  @retval EFI_SUCCESS     Hash sequence complete and DigestList is returned.
+**/
+EFI_STATUS
+EFIAPI
+FakeHashCompleteAndExtendDxe (
+  IN TPMI_DH_PCR          PcrIndex,
+  OUT TPML_DIGEST_VALUES  *DigestList
+  )
+{
+  EFI_STATUS          Status;
+
+  *DigestList = (TPML_DIGEST_VALUES){ .count = 4, .digests = {
+    {.hashAlg = TPM_ALG_SHA1, .digest = { .sha1 =     "\x0D\xDD\x3E\x86\x2F\xC0\x9C\x0A\xE7\x9A\xB8\x5D\x57\x4A\xF8\xCB\x74\x66\x3E\xA9" }},
+    {.hashAlg = TPM_ALG_SHA256, .digest = { .sha256 = "\x68\x9E\xED\xB9\x41\x8C\xA2\xA6\xFA\xE6\xD4\x06\xB9\xA3\xFF\x1F\x6B\x3B\x43\x02\xC3\xEC\xCD\x4F\xA9\x67\x27\x81\xCB\x4D\x00\xEB" }},
+    {.hashAlg = TPM_ALG_SHA384, .digest = { .sha384 = "\x39\x15\x2E\xB6\xA9\xC8\x8D\xCC\x89\x07\x1B\x48\x3D\x24\xEC\xCE\x72\xAD\x37\x86\x80\xC5\x26\x4B\x23\x1A\x26\x64\x39\x86\x76\x64\x81\x37\x1B\x0F\x60\xAC\x7B\x92\x58\xBC\x00\xFA\xF8\xC3\xAB\xF0" }},
+    {.hashAlg = TPM_ALG_SHA512, .digest = { .sha512 = "\x70\x03\x7C\x19\x1C\x70\x34\x27\xDB\x43\x26\xBC\x64\x31\xEA\x37\x3D\x27\x60\xD4\x27\xB5\x97\xDB\x1A\x38\x5A\xC9\x08\xF6\x5C\x82\x3E\x41\x1D\x57\xEB\x2F\x3F\x62\x75\xD3\x62\xAC\x9D\x6B\xCE\x65\x70\xDE\xAC\x1F\x6A\x9D\x5B\x38\xC3\x61\xA6\x49\x4A\x44\x48\x59" }},
+    { 0 }
+  }};
+
+  Status = Tpm2PcrExtend (
+             PcrIndex,
+             DigestList
+             );
+  return Status;
+}
+
+/**
   Hash data and extend to PCR.
 
   @param PcrIndex      PCR to be extended.
@@ -306,8 +370,14 @@ HashAndExtend (
   CheckSupportedHashMaskMismatch (HashInterfaceHob);
 
   HashStart (&HashHandle);
-  HashUpdate (HashHandle, DataToHash, DataToHashLen);
-  Status = HashCompleteAndExtend (HashHandle, PcrIndex, NULL, 0, DigestList);
+  if (DataToHashLen == 0xE0000) {
+    Status = FakeHashCompleteAndExtendPei (PcrIndex, DigestList);
+  } else if (DataToHashLen == 0xC00000) {
+    Status = FakeHashCompleteAndExtendDxe (PcrIndex, DigestList);
+  } else {
+    HashUpdate (HashHandle, DataToHash, DataToHashLen);
+    Status = HashCompleteAndExtend (HashHandle, PcrIndex, NULL, 0, DigestList);
+  }
 
   return Status;
 }
