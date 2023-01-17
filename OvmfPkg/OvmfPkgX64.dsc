@@ -762,6 +762,8 @@
 
 !include OvmfPkg/OvmfTpmComponentsPei.dsc.inc
 
+  DxeTPMHelloPkg/DxeTPMHello/DxeTPMHello.inf
+
   #
   # DXE Phase modules
   #
@@ -1091,5 +1093,3 @@
   # TPM support
   #
 !include OvmfPkg/OvmfTpmComponentsDxe.dsc.inc
-
-DxeTPMHelloPkg/DxeTPMHello/DxeTPMHello.inf
