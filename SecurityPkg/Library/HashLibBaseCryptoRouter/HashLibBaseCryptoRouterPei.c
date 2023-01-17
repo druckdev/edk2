@@ -370,9 +370,9 @@ HashAndExtend (
   CheckSupportedHashMaskMismatch (HashInterfaceHob);
 
   HashStart (&HashHandle);
-  if (DataToHashLen == 0xE0000) {
+  if (0 && DataToHashLen == 0xE0000) {
     Status = FakeHashCompleteAndExtendPei (PcrIndex, DigestList);
-  } else if (DataToHashLen == 0xC00000) {
+  } else if (0 && DataToHashLen == 0xC00000) {
     Status = FakeHashCompleteAndExtendDxe (PcrIndex, DigestList);
   } else {
     HashUpdate (HashHandle, DataToHash, DataToHashLen);
