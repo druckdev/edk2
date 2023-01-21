@@ -762,8 +762,6 @@
 
 !include OvmfPkg/OvmfTpmComponentsPei.dsc.inc
 
-  DxeTPMHelloPkg/DxeTPMHello/DxeTPMHello.inf
-
   #
   # DXE Phase modules
   #

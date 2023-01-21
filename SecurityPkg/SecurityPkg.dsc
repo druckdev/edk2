@@ -335,6 +335,8 @@
       NULL|SecurityPkg/Library/HashInstanceLibSm3/HashInstanceLibSm3.inf
   }
 
+  SecurityPkg/Tcg/Tcg2HelloPei/Tcg2HelloPei.inf
+
   SecurityPkg/Tcg/Tcg2PlatformPei/Tcg2PlatformPei.inf {
     <LibraryClasses>
       TpmPlatformHierarchyLib|SecurityPkg/Library/PeiDxeTpmPlatformHierarchyLib/PeiDxeTpmPlatformHierarchyLib.inf
