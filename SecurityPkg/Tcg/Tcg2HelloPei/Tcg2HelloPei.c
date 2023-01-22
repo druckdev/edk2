@@ -122,14 +122,14 @@ TPMHelloEntryPoint(
     mPreHashedFv->FvLength = 0xE0000;
     mPreHashedFv->Count    = 4;
 
-    offset = 1;
-    CopyMem(mPreHashedFv + offset, mPreHashedSHA1,   sizeof(HASH_INFO) + mPreHashedSHA1->HashSize);
+    offset = sizeof(*mPreHashedFv);
+    CopyMem(((void*)mPreHashedFv) + offset, mPreHashedSHA1,   sizeof(HASH_INFO) + mPreHashedSHA1->HashSize);
     offset += sizeof(HASH_INFO) + mPreHashedSHA1->HashSize;
-    CopyMem(mPreHashedFv + offset, mPreHashedSHA256, sizeof(HASH_INFO) + mPreHashedSHA256->HashSize);
+    CopyMem(((void*)mPreHashedFv) + offset, mPreHashedSHA256, sizeof(HASH_INFO) + mPreHashedSHA256->HashSize);
     offset += sizeof(HASH_INFO) + mPreHashedSHA256->HashSize;
-    CopyMem(mPreHashedFv + offset, mPreHashedSHA384, sizeof(HASH_INFO) + mPreHashedSHA384->HashSize);
+    CopyMem(((void*)mPreHashedFv) + offset, mPreHashedSHA384, sizeof(HASH_INFO) + mPreHashedSHA384->HashSize);
     offset += sizeof(HASH_INFO) + mPreHashedSHA384->HashSize;
-    CopyMem(mPreHashedFv + offset, mPreHashedSHA512, sizeof(HASH_INFO) + mPreHashedSHA512->HashSize);
+    CopyMem(((void*)mPreHashedFv) + offset, mPreHashedSHA512, sizeof(HASH_INFO) + mPreHashedSHA512->HashSize);
 
     gPpiLitPrehashedFvPpi.Ppi = (EDKII_PEI_FIRMWARE_VOLUME_INFO_PREHASHED_FV_PPI*) mPreHashedFv;
     DEBUG ((DEBUG_INFO, "Hello World!\n"));
