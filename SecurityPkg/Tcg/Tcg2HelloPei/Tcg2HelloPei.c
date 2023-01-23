@@ -70,12 +70,6 @@ struct prehashed_fv gEdkiiPrehashedFv = {
 };
 #endif
 
-EFI_PEI_PPI_DESCRIPTOR gPpiLitPrehashedFvPpi = {
-    (EFI_PEI_PPI_DESCRIPTOR_PPI | EFI_PEI_PPI_DESCRIPTOR_TERMINATE_LIST),
-    &gEdkiiPeiFirmwareVolumeInfoPrehashedFvPpiGuid,
-    NULL
-};
-
 EFI_STATUS
 EFIAPI
 TPMHelloEntryPoint(
@@ -83,7 +77,10 @@ TPMHelloEntryPoint(
         IN CONST EFI_PEI_SERVICES    **PeiServices
 ) {
     EFI_STATUS Status;
-    EDKII_PEI_FIRMWARE_VOLUME_INFO_PREHASHED_FV_PPI* mPreHashedFv;
+    EDKII_PEI_FIRMWARE_VOLUME_INFO_PREHASHED_FV_PPI* mPrehashedPeiFv;
+    EDKII_PEI_FIRMWARE_VOLUME_INFO_PREHASHED_FV_PPI* mPrehashedDxeFv;
+    EFI_PEI_PPI_DESCRIPTOR* gPpiListPrehashedPeiFvPpi;
+    EFI_PEI_PPI_DESCRIPTOR* gPpiListPrehashedDxeFvPpi;
     HASH_INFO* mPreHashedSHA1;
     HASH_INFO* mPreHashedSHA256;
     HASH_INFO* mPreHashedSHA384;
@@ -113,25 +110,45 @@ TPMHelloEntryPoint(
     CopyMem(mPreHashedSHA384 + 1, (UINT8[]) { 0xBE, 0xEF, 0xBE, 0xEF, 0xBE, 0xEF, 0xBE, 0xEF, 0xBE, 0xEF, 0xBE, 0xEF, 0xBE, 0xEF, 0xBE, 0xEF, 0xBE, 0xEF, 0xBE, 0xEF, 0xBE, 0xEF, 0xBE, 0xEF, 0xBE, 0xEF, 0xBE, 0xEF, 0xBE, 0xEF, 0xBE, 0xEF, 0xBE, 0xEF, 0xBE, 0xEF, 0xBE, 0xEF, 0xBE, 0xEF, 0xBE, 0xEF, 0xBE, 0xEF, 0xBE, 0xEF, 0xBE, 0xEF}, mPreHashedSHA384->HashSize);
     CopyMem(mPreHashedSHA512 + 1, (UINT8[]) { 0xBE, 0xEF, 0xBE, 0xEF, 0xBE, 0xEF, 0xBE, 0xEF, 0xBE, 0xEF, 0xBE, 0xEF, 0xBE, 0xEF, 0xBE, 0xEF, 0xBE, 0xEF, 0xBE, 0xEF, 0xBE, 0xEF, 0xBE, 0xEF, 0xBE, 0xEF, 0xBE, 0xEF, 0xBE, 0xEF, 0xBE, 0xEF, 0xBE, 0xEF, 0xBE, 0xEF, 0xBE, 0xEF, 0xBE, 0xEF, 0xBE, 0xEF, 0xBE, 0xEF, 0xBE, 0xEF, 0xBE, 0xEF, 0xBE, 0xEF, 0xBE, 0xEF, 0xBE, 0xEF, 0xBE, 0xEF, 0xBE, 0xEF, 0xBE, 0xEF, 0xBE, 0xEF, 0xBE, 0xEF }, mPreHashedSHA512->HashSize);
 
-    UINT16 sum = mPreHashedSHA1->HashSize + mPreHashedSHA256->HashSize + mPreHashedSHA384->HashSize + mPreHashedSHA512->HashSize;
-    mPreHashedFv = AllocatePool(sizeof(*mPreHashedFv) + sizeof(HASH_INFO) * 4 + sum);
+    UINTN size = sizeof(*mPrehashedPeiFv) + 4 * sizeof(HASH_INFO) +
+      mPreHashedSHA1->HashSize + mPreHashedSHA256->HashSize +
+      mPreHashedSHA384->HashSize + mPreHashedSHA512->HashSize;
 
-    mPreHashedFv->FvBase   = 0x820000;
-    mPreHashedFv->FvLength = 0xE0000;
-    mPreHashedFv->Count    = 4;
+    mPrehashedPeiFv = AllocatePool(size);
+    mPrehashedDxeFv = AllocatePool(size);
 
-    offset = sizeof(*mPreHashedFv);
-    CopyMem(((void*)mPreHashedFv) + offset, mPreHashedSHA1,   sizeof(HASH_INFO) + mPreHashedSHA1->HashSize);
+    mPrehashedPeiFv->FvBase   = 0x820000;
+    mPrehashedPeiFv->FvLength = 0xE0000;
+    mPrehashedPeiFv->Count    = 4;
+
+    offset = sizeof(*mPrehashedPeiFv);
+    CopyMem(((void*)mPrehashedPeiFv) + offset, mPreHashedSHA1,   sizeof(HASH_INFO) + mPreHashedSHA1->HashSize);
     offset += sizeof(HASH_INFO) + mPreHashedSHA1->HashSize;
-    CopyMem(((void*)mPreHashedFv) + offset, mPreHashedSHA256, sizeof(HASH_INFO) + mPreHashedSHA256->HashSize);
+    CopyMem(((void*)mPrehashedPeiFv) + offset, mPreHashedSHA256, sizeof(HASH_INFO) + mPreHashedSHA256->HashSize);
     offset += sizeof(HASH_INFO) + mPreHashedSHA256->HashSize;
-    CopyMem(((void*)mPreHashedFv) + offset, mPreHashedSHA384, sizeof(HASH_INFO) + mPreHashedSHA384->HashSize);
+    CopyMem(((void*)mPrehashedPeiFv) + offset, mPreHashedSHA384, sizeof(HASH_INFO) + mPreHashedSHA384->HashSize);
     offset += sizeof(HASH_INFO) + mPreHashedSHA384->HashSize;
-    CopyMem(((void*)mPreHashedFv) + offset, mPreHashedSHA512, sizeof(HASH_INFO) + mPreHashedSHA512->HashSize);
+    CopyMem(((void*)mPrehashedPeiFv) + offset, mPreHashedSHA512, sizeof(HASH_INFO) + mPreHashedSHA512->HashSize);
 
-    gPpiLitPrehashedFvPpi.Ppi = (EDKII_PEI_FIRMWARE_VOLUME_INFO_PREHASHED_FV_PPI*) mPreHashedFv;
+    CopyMem(mPrehashedDxeFv, mPrehashedPeiFv, size);
+    mPrehashedDxeFv->FvBase   = 0x900000;
+    mPrehashedDxeFv->FvLength = 0xC00000;
+
+
+    gPpiListPrehashedPeiFvPpi = AllocatePool(sizeof(EFI_PEI_PPI_DESCRIPTOR));
+    gPpiListPrehashedDxeFvPpi = AllocatePool(sizeof(EFI_PEI_PPI_DESCRIPTOR));
+
+    gPpiListPrehashedPeiFvPpi->Flags = (EFI_PEI_PPI_DESCRIPTOR_PPI | EFI_PEI_PPI_DESCRIPTOR_TERMINATE_LIST);
+    gPpiListPrehashedPeiFvPpi->Guid = &gEdkiiPeiFirmwareVolumeInfoPrehashedFvPpiGuid;
+    gPpiListPrehashedPeiFvPpi->Ppi = mPrehashedPeiFv;
+
+    CopyMem(gPpiListPrehashedDxeFvPpi, gPpiListPrehashedPeiFvPpi, sizeof(EFI_PEI_PPI_DESCRIPTOR));
+    gPpiListPrehashedDxeFvPpi->Ppi = mPrehashedDxeFv;
+
+    PeiServicesInstallPpi (gPpiListPrehashedPeiFvPpi);
+    PeiServicesInstallPpi (gPpiListPrehashedDxeFvPpi);
+
     DEBUG ((DEBUG_INFO, "Hello World!\n"));
-    PeiServicesInstallPpi (&gPpiLitPrehashedFvPpi);
 
     return Status;
 }
