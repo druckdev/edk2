@@ -93,20 +93,20 @@ TPMHelloEntryPoint(
 
     Status = EFI_SUCCESS;
 
-    mPreHashedSHA1   = AllocatePool(sizeof(*mPreHashedSHA1  ) + 20 /* SHA1_DIGEST_SIZE   */);
-    mPreHashedSHA256 = AllocatePool(sizeof(*mPreHashedSHA256) + 32 /* SHA256_DIGEST_SIZE */);
-    mPreHashedSHA384 = AllocatePool(sizeof(*mPreHashedSHA384) + 48 /* SHA384_DIGEST_SIZE */);
-    mPreHashedSHA512 = AllocatePool(sizeof(*mPreHashedSHA512) + 64 /* SHA512_DIGEST_SIZE */);
+    mPreHashedSHA1   = AllocatePool(sizeof(*mPreHashedSHA1)   + SHA1_DIGEST_SIZE);
+    mPreHashedSHA256 = AllocatePool(sizeof(*mPreHashedSHA256) + SHA256_DIGEST_SIZE);
+    mPreHashedSHA384 = AllocatePool(sizeof(*mPreHashedSHA384) + SHA384_DIGEST_SIZE);
+    mPreHashedSHA512 = AllocatePool(sizeof(*mPreHashedSHA512) + SHA512_DIGEST_SIZE);
 
-    mPreHashedSHA1->HashAlgoId   = 0x4;
-    mPreHashedSHA256->HashAlgoId = 0xB;
-    mPreHashedSHA384->HashAlgoId = 0xC;
-    mPreHashedSHA512->HashAlgoId = 0xD;
+    mPreHashedSHA1->HashAlgoId   = TPM_ALG_SHA1;
+    mPreHashedSHA256->HashAlgoId = TPM_ALG_SHA256;
+    mPreHashedSHA384->HashAlgoId = TPM_ALG_SHA384;
+    mPreHashedSHA512->HashAlgoId = TPM_ALG_SHA512;
 
-    mPreHashedSHA1->HashSize   = 20;
-    mPreHashedSHA256->HashSize = 32;
-    mPreHashedSHA384->HashSize = 48;
-    mPreHashedSHA512->HashSize = 64;
+    mPreHashedSHA1->HashSize   = SHA1_DIGEST_SIZE;
+    mPreHashedSHA256->HashSize = SHA256_DIGEST_SIZE;
+    mPreHashedSHA384->HashSize = SHA384_DIGEST_SIZE;
+    mPreHashedSHA512->HashSize = SHA512_DIGEST_SIZE;
 
     // TODO: Apparently this is not copied together properly. Use gdb to debug
     //       and inspect
