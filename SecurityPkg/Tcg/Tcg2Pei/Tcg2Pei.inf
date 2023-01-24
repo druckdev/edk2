@@ -90,7 +90,8 @@
 
 [Depex]
   gEfiPeiMasterBootModePpiGuid AND
-  gEfiTpmDeviceSelectedGuid
+  gEfiTpmDeviceSelectedGuid AND
+  gEdkiiPeiFirmwareVolumeInfoPrehashedFvPpiGuid
 
 [UserExtensions.TianoCore."ExtraFiles"]
   Tcg2PeiExtra.uni
