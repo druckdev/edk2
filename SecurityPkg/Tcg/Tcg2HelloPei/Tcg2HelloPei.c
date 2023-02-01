@@ -103,7 +103,7 @@ TPMHelloEntryPoint(
 
     CopyMem(mPrehashedDxeFv, mPrehashedPeiFv, size);
 
-    offset = sizeof(*mPrehashedDxeFv) + sizeof(HASH_INFO);
+    offset = sizeof(*mPrehashedDxeFv) + sizeof(HASH_INFO); /* keep AlgoId & HashSize */
     CopyMem(((void*)mPrehashedDxeFv) + offset, "\x7f\xba\xcd\x82\xa3\xfa\xec\xf8\x3b\x01\xa1\x5f\xf4\xcb\xfd\xed\x61\x5a\xaf\xad" , mPreHashedSHA1->HashSize);
     offset += mPreHashedSHA1->HashSize + sizeof(HASH_INFO);
     CopyMem(((void*)mPrehashedDxeFv) + offset, "\x49\x91\xde\xbd\xa2\xdd\x59\x2f\x0b\x8a\xe2\x14\x99\xa2\x0c\xe5\x87\x42\x52\x0f\xac\xdb\x64\xd9\x45\x86\x72\xc1\xe2\x2d\xfb\x50" , mPreHashedSHA256->HashSize);
