@@ -104,7 +104,8 @@ TPMHelloEntryPoint(
 
     mPrehashedPeiFv->FvBase   = 0x820000;
     mPrehashedPeiFv->FvLength = 0xE0000;
-    mPrehashedPeiFv->Count    = 4;
+    mPrehashedPeiFv->Count    = INCLUDE_SHA1 + INCLUDE_SHA256 + INCLUDE_SHA256 +
+                                INCLUDE_SHA512;
 
     offset = sizeof(*mPrehashedPeiFv);
 #if INCLUDE_SHA1
