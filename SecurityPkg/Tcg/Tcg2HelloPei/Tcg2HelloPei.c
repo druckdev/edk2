@@ -46,6 +46,12 @@ SPDX-License-Identifier: BSD-2-Clause-Patent
 #define INCLUDE_SHA384 1
 #define INCLUDE_SHA512 1
 
+#define PEI_FV_BASE   0x820000;
+#define PEI_FV_LENGTH 0xE0000;
+
+#define DXE_FV_BASE   0x900000;
+#define DXE_FV_LENGTH 0xC00000;
+
 EFI_STATUS
 EFIAPI
 TPMHelloEntryPoint(
@@ -102,8 +108,8 @@ TPMHelloEntryPoint(
     mPrehashedPeiFv = AllocatePool(size);
     mPrehashedDxeFv = AllocatePool(size);
 
-    mPrehashedPeiFv->FvBase   = 0x820000;
-    mPrehashedPeiFv->FvLength = 0xE0000;
+    mPrehashedPeiFv->FvBase   = PEI_FV_BASE;
+    mPrehashedPeiFv->FvLength = PEI_FV_LENGTH;
     mPrehashedPeiFv->Count    = INCLUDE_SHA1 + INCLUDE_SHA256 + INCLUDE_SHA256 +
                                 INCLUDE_SHA512;
 
@@ -143,8 +149,8 @@ TPMHelloEntryPoint(
     CopyMem(((void*)mPrehashedDxeFv) + offset, "\x7e\x33\x0c\xae\xb6\x8d\xb4\x24\xce\x69\xf2\x8e\x88\x19\x5d\x55\xe0\x0e\x67\xa3\xf3\x9e\x8f\xba\x02\x65\x76\x8e\x4c\x6a\xfb\x0b\xd8\x3d\xb5\x89\x95\x81\x11\xa7\x43\x1b\x9a\xba\xfe\x37\x61\x47\x94\xa4\xae\x85\xaf\x65\x97\x32\x60\x80\x90\x6f\xa3\xd9\xef\x0c" , mPreHashedSHA512->HashSize);
 #endif
 
-    mPrehashedDxeFv->FvBase   = 0x900000;
-    mPrehashedDxeFv->FvLength = 0xC00000;
+    mPrehashedDxeFv->FvBase   = DXE_FV_BASE;
+    mPrehashedDxeFv->FvLength = DXE_FV_LENGTH;
 
 
     gPpiListPrehashedPeiFvPpi = AllocatePool(sizeof(EFI_PEI_PPI_DESCRIPTOR));
