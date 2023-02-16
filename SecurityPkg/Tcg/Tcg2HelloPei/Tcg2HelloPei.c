@@ -41,6 +41,8 @@ SPDX-License-Identifier: BSD-2-Clause-Patent
 #include <Library/ResetSystemLib.h>
 #include <Library/PrintLib.h>
 
+#define INCLUDE_DXE_FV 1
+
 #define INCLUDE_SHA1 1
 #define INCLUDE_SHA256 1
 #define INCLUDE_SHA384 1
@@ -59,11 +61,14 @@ TPMHelloEntryPoint(
         IN CONST EFI_PEI_SERVICES    **PeiServices
 ) {
     EFI_STATUS Status;
-    EDKII_PEI_FIRMWARE_VOLUME_INFO_PREHASHED_FV_PPI* mPrehashedPeiFv;
-    EDKII_PEI_FIRMWARE_VOLUME_INFO_PREHASHED_FV_PPI* mPrehashedDxeFv;
-    EFI_PEI_PPI_DESCRIPTOR* gPpiListPrehashedPeiFvPpi;
-    EFI_PEI_PPI_DESCRIPTOR* gPpiListPrehashedDxeFvPpi;
     UINTN offset;
+    EDKII_PEI_FIRMWARE_VOLUME_INFO_PREHASHED_FV_PPI* mPrehashedPeiFv;
+    EFI_PEI_PPI_DESCRIPTOR* gPpiListPrehashedPeiFvPpi;
+
+#if INCLUDE_DXE_FV
+    EDKII_PEI_FIRMWARE_VOLUME_INFO_PREHASHED_FV_PPI* mPrehashedDxeFv;
+    EFI_PEI_PPI_DESCRIPTOR* gPpiListPrehashedDxeFvPpi;
+#endif
 
     Status = EFI_SUCCESS;
     UINTN size = sizeof(*mPrehashedPeiFv);
@@ -106,8 +111,6 @@ TPMHelloEntryPoint(
 #endif
 
     mPrehashedPeiFv = AllocatePool(size);
-    mPrehashedDxeFv = AllocatePool(size);
-
     mPrehashedPeiFv->FvBase   = PEI_FV_BASE;
     mPrehashedPeiFv->FvLength = PEI_FV_LENGTH;
     mPrehashedPeiFv->Count    = INCLUDE_SHA1 + INCLUDE_SHA256 + INCLUDE_SHA256 +
@@ -130,6 +133,15 @@ TPMHelloEntryPoint(
     CopyMem(((void*)mPrehashedPeiFv) + offset, mPreHashedSHA512, sizeof(HASH_INFO) + mPreHashedSHA512->HashSize);
 #endif
 
+    gPpiListPrehashedPeiFvPpi = AllocatePool(sizeof(EFI_PEI_PPI_DESCRIPTOR));
+    gPpiListPrehashedPeiFvPpi->Flags = (EFI_PEI_PPI_DESCRIPTOR_PPI | EFI_PEI_PPI_DESCRIPTOR_TERMINATE_LIST);
+    gPpiListPrehashedPeiFvPpi->Guid = &gEdkiiPeiFirmwareVolumeInfoPrehashedFvPpiGuid;
+    gPpiListPrehashedPeiFvPpi->Ppi = mPrehashedPeiFv;
+    PeiServicesInstallPpi (gPpiListPrehashedPeiFvPpi);
+
+
+#if INCLUDE_DXE_FV
+    mPrehashedDxeFv = AllocatePool(size);
     CopyMem(mPrehashedDxeFv, mPrehashedPeiFv, size);
 
     offset = sizeof(*mPrehashedDxeFv) + sizeof(HASH_INFO); /* keep AlgoId & HashSize */
@@ -152,21 +164,11 @@ TPMHelloEntryPoint(
     mPrehashedDxeFv->FvBase   = DXE_FV_BASE;
     mPrehashedDxeFv->FvLength = DXE_FV_LENGTH;
 
-
-    gPpiListPrehashedPeiFvPpi = AllocatePool(sizeof(EFI_PEI_PPI_DESCRIPTOR));
     gPpiListPrehashedDxeFvPpi = AllocatePool(sizeof(EFI_PEI_PPI_DESCRIPTOR));
-
-    gPpiListPrehashedPeiFvPpi->Flags = (EFI_PEI_PPI_DESCRIPTOR_PPI | EFI_PEI_PPI_DESCRIPTOR_TERMINATE_LIST);
-    gPpiListPrehashedPeiFvPpi->Guid = &gEdkiiPeiFirmwareVolumeInfoPrehashedFvPpiGuid;
-    gPpiListPrehashedPeiFvPpi->Ppi = mPrehashedPeiFv;
-
     CopyMem(gPpiListPrehashedDxeFvPpi, gPpiListPrehashedPeiFvPpi, sizeof(EFI_PEI_PPI_DESCRIPTOR));
     gPpiListPrehashedDxeFvPpi->Ppi = mPrehashedDxeFv;
-
-    PeiServicesInstallPpi (gPpiListPrehashedPeiFvPpi);
     PeiServicesInstallPpi (gPpiListPrehashedDxeFvPpi);
-
-    DEBUG ((DEBUG_INFO, "Hello World!\n"));
+#endif
 
     return Status;
 }
