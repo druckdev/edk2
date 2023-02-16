@@ -19,7 +19,7 @@
   PLATFORM_GUID                  = 5a9e7754-d81b-49ea-85ad-69eaa7b1539b
   PLATFORM_VERSION               = 0.1
   DSC_SPECIFICATION              = 0x00010005
-  OUTPUT_DIRECTORY               = Build/OvmfIa32
+  OUTPUT_DIRECTORY               = build/OvmfIa32
   SUPPORTED_ARCHITECTURES        = IA32
   BUILD_TARGETS                  = NOOPT|DEBUG|RELEASE
   SKUID_IDENTIFIER               = DEFAULT
@@ -29,7 +29,7 @@
   # Defines for default states.  These can be changed on the command line.
   # -D FLAG=VALUE
   #
-  DEFINE SECURE_BOOT_ENABLE      = FALSE
+  DEFINE SECURE_BOOT_ENABLE      = TRUE
   DEFINE SMM_REQUIRE             = FALSE
   DEFINE SOURCE_DEBUG_ENABLE     = FALSE
   DEFINE LOAD_X64_ON_IA32_ENABLE = FALSE
