@@ -1,45 +1,9 @@
-/** @file
-  Initialize TPM2 device and measure FVs before handing off control to DXE.
-
-Copyright (c) 2015 - 2021, Intel Corporation. All rights reserved.<BR>
-Copyright (c) 2017, Microsoft Corporation.  All rights reserved. <BR>
-SPDX-License-Identifier: BSD-2-Clause-Patent
-
-**/
-
-#include <PiPei.h>
-
-#include <IndustryStandard/UefiTcgPlatform.h>
-#include <Ppi/FirmwareVolumeInfo.h>
-#include <Ppi/FirmwareVolumeInfo2.h>
-#include <Ppi/TpmInitialized.h>
-#include <Ppi/FirmwareVolume.h>
-#include <Ppi/EndOfPeiPhase.h>
-#include <Ppi/FirmwareVolumeInfoMeasurementExcluded.h>
-#include <Ppi/FirmwareVolumeInfoPrehashedFV.h>
-#include <Ppi/Tcg.h>
-
-#include <Guid/TcgEventHob.h>
-#include <Guid/MeasuredFvHob.h>
-#include <Guid/TpmInstance.h>
-#include <Guid/MigratedFvInfo.h>
-
-#include <Library/DebugLib.h>
+#include <IndustryStandard/Tpm20.h>
+#include <Library/BaseCryptLib.h>
 #include <Library/BaseMemoryLib.h>
-#include <Library/PeiServicesLib.h>
-#include <Library/PeimEntryPoint.h>
-#include <Library/Tpm2CommandLib.h>
-#include <Library/Tpm2DeviceLib.h>
-#include <Library/HashLib.h>
-#include <Library/HobLib.h>
-#include <Library/PcdLib.h>
-#include <Library/PeiServicesTablePointerLib.h>
-#include <Protocol/Tcg2Protocol.h>
-#include <Library/PerformanceLib.h>
 #include <Library/MemoryAllocationLib.h>
-#include <Library/ReportStatusCodeLib.h>
-#include <Library/ResetSystemLib.h>
-#include <Library/PrintLib.h>
+#include <Library/PeiServicesLib.h>
+#include <Ppi/FirmwareVolumeInfoPrehashedFV.h>
 
 #define INCLUDE_DXE_FV 1
 
