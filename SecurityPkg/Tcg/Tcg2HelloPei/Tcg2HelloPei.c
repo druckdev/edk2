@@ -3,6 +3,7 @@
 #include <Library/BaseMemoryLib.h>
 #include <Library/MemoryAllocationLib.h>
 #include <Library/PeiServicesLib.h>
+#include <Library/HobLib.h>
 #include <Ppi/FirmwareVolumeInfoPrehashedFV.h>
 
 #define INCLUDE_DXE_FV 1
@@ -17,6 +18,8 @@
 
 #define DXE_FV_BASE   0x900000;
 #define DXE_FV_LENGTH 0xC00000;
+
+extern EFI_GUID gTestHobGuid;
 
 EFI_STATUS
 EFIAPI
@@ -133,6 +136,19 @@ TPMHelloEntryPoint(
     gPpiListPrehashedDxeFvPpi->Ppi = mPrehashedDxeFv;
     PeiServicesInstallPpi (gPpiListPrehashedDxeFvPpi);
 #endif
+
+    // https://edk2-docs.gitbook.io/edk-ii-module-writer-s-guide/7_pre-efi_initialization_modules/76_communicate_with_dxe_modules
+    char test_str[] = "This is a test\n";
+    void* test_hob = BuildGuidHob (
+            &gTestHobGuid,
+            sizeof(test_str)
+            );
+
+    if (test_hob != NULL) {
+        CopyMem(test_hob, test_str, sizeof(test_str));
+    } else {
+        return RETURN_BUFFER_TOO_SMALL;
+    }
 
     return Status;
 }

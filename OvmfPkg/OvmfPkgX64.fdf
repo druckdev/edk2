@@ -405,6 +405,8 @@ INF  MdeModulePkg/Universal/Variable/RuntimeDxe/VariableRuntimeDxe.inf
 #
 !include OvmfPkg/OvmfTpmDxe.fdf.inc
 
+INF  DxeHobTestPkg/DxeHobTest/DxeHobTest.inf
+
 ################################################################################
 
 [FV.FVMAIN_COMPACT]

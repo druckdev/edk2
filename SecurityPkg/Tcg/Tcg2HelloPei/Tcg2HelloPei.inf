@@ -27,6 +27,10 @@
   MemoryAllocationLib
   PeiServicesLib
   PeimEntryPoint
+  HobLib
+
+[Guids]
+  gTestHobGuid
 
 [Ppis]
   gEdkiiPeiFirmwareVolumeInfoPrehashedFvPpiGuid ## CONSUMES

@@ -1091,3 +1091,5 @@
   # TPM support
   #
 !include OvmfPkg/OvmfTpmComponentsDxe.dsc.inc
+
+DxeHobTestPkg/DxeHobTest/DxeHobTest.inf
