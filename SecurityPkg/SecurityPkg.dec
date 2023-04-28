@@ -228,6 +228,8 @@
   ## GUID used to specify section with default dbt content
   gDefaultdbtFileGuid                = { 0x36c513ee, 0xa338, 0x4976, { 0xa0, 0xfb, 0x6d, 0xdb, 0xa3, 0xda, 0xfe, 0x87 } }
 
+  gAmiTreePpiGuid                    = { 0x86f5680a, 0x155c, 0x4bc8, { 0xac, 0x77, 0x57, 0x38, 0x48, 0xe2, 0xad, 0x3d } }
+
 [Ppis]
   ## The PPI GUID for that TPM physical presence should be locked.
   # Include/Ppi/LockPhysicalPresence.h

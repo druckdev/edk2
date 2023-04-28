@@ -20,6 +20,7 @@
 #define DXE_FV_LENGTH 0xC00000;
 
 extern EFI_GUID gTestHobGuid;
+extern EFI_GUID gAmiTreePpiGuid;
 
 EFI_STATUS
 EFIAPI
@@ -141,14 +142,14 @@ TPMHelloEntryPoint(
     char test_str[] = "This is a test\n";
     void* test_hob = BuildGuidHob (
             &gTestHobGuid,
-            sizeof(test_str)
-            );
+            sizeof(test_str));
 
-    if (test_hob != NULL) {
-        CopyMem(test_hob, test_str, sizeof(test_str));
-    } else {
+    if (test_hob == NULL)
         return RETURN_BUFFER_TOO_SMALL;
-    }
+
+    CopyMem(test_hob, test_str, sizeof(test_str));
+
+    // PeiServicesLocatePpi(&gAmiTreePpiGuid, 0, NULL, (VOID**)&AmiTreePpi);
 
     return Status;
 }
