@@ -141,7 +141,7 @@ TPMHelloEntryPoint(
 #endif
 
     // https://edk2-docs.gitbook.io/edk-ii-module-writer-s-guide/7_pre-efi_initialization_modules/76_communicate_with_dxe_modules
-    char test_str[] = "This is a test\n";
+    char test_str[] = "s\x0EThis is a testabc";
     void* test_hob = BuildGuidHob(&gTestHobGuid, sizeof(test_str));
 
     if (test_hob == NULL)
