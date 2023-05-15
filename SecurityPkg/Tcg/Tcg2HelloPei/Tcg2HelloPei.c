@@ -28,6 +28,7 @@ TPMHelloEntryPoint(
         IN       EFI_PEI_FILE_HANDLE FileHandle,
         IN CONST EFI_PEI_SERVICES    **PeiServices
 ) {
+#if 0
     EFI_STATUS Status;
     UINTN offset;
     EDKII_PEI_FIRMWARE_VOLUME_INFO_PREHASHED_FV_PPI* mPrehashedPeiFv;
@@ -137,19 +138,18 @@ TPMHelloEntryPoint(
     gPpiListPrehashedDxeFvPpi->Ppi = mPrehashedDxeFv;
     PeiServicesInstallPpi (gPpiListPrehashedDxeFvPpi);
 #endif
+#endif
 
     // https://edk2-docs.gitbook.io/edk-ii-module-writer-s-guide/7_pre-efi_initialization_modules/76_communicate_with_dxe_modules
     char test_str[] = "This is a test\n";
-    void* test_hob = BuildGuidHob (
-            &gTestHobGuid,
-            sizeof(test_str));
+    void* test_hob = BuildGuidHob(&gTestHobGuid, sizeof(test_str));
 
     if (test_hob == NULL)
-        return RETURN_BUFFER_TOO_SMALL;
+        return EFI_OUT_OF_RESOURCES;
 
     CopyMem(test_hob, test_str, sizeof(test_str));
 
     // PeiServicesLocatePpi(&gAmiTreePpiGuid, 0, NULL, (VOID**)&AmiTreePpi);
 
-    return Status;
+    return EFI_SUCCESS;
 }

@@ -37,5 +37,4 @@
   gEdkiiPeiFirmwareVolumeInfoPrehashedFvPpiGuid ## CONSUMES
 
 [Depex]
-  gEfiPeiMasterBootModePpiGuid AND
-  gEfiTpmDeviceSelectedGuid
+  TRUE
