@@ -32,6 +32,7 @@
 [Guids]
   gTestHobGuid
   gAmiTreePpiGuid
+  gTrEE_HashLogExtendPpiGuid
 
 [Ppis]
   gEdkiiPeiFirmwareVolumeInfoPrehashedFvPpiGuid ## CONSUMES
