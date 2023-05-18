@@ -44,9 +44,9 @@ place_EOHOB(UINT8* hob)
 void
 LocateOrNotify(EFI_GUID* guid) {
     EFI_STATUS Status;
-    void* ppi;
+    void* ppi = NULL;
 
-    Status = PeiServicesLocatePpi(&guid, 0, NULL, &ppi);
+    Status = PeiServicesLocatePpi(guid, 0, NULL, &ppi);
     if (!Status) {
         *((UINT32*)hob) = (UINT32)ppi;
     } else {
@@ -70,9 +70,6 @@ TPMHelloEntryPoint(
         IN CONST EFI_PEI_SERVICES    **PeiServices
 ) {
     // https://edk2-docs.gitbook.io/edk-ii-module-writer-s-guide/7_pre-efi_initialization_modules/76_communicate_with_dxe_modules
-    EFI_STATUS Status;
-    void* ppi = NULL;
-
     hob = BuildGuidHob(&gTestHobGuid, 24);
     if (!hob)
         return EFI_OUT_OF_RESOURCES;
