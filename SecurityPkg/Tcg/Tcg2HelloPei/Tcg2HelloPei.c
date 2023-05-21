@@ -79,7 +79,7 @@ TPMHelloEntryPoint(
         IN CONST EFI_PEI_SERVICES    **PeiServices
 ) {
     // https://edk2-docs.gitbook.io/edk-ii-module-writer-s-guide/7_pre-efi_initialization_modules/76_communicate_with_dxe_modules
-    UINTN len = 24;
+    UINTN len = 32;
     hob = BuildGuidHob(&gTestHobGuid, len);
     if (!hob) {
         if ((hob = BuildGuidHob(&gTestHobGuid, 5)))
