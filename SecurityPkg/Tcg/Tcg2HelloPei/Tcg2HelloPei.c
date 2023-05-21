@@ -43,25 +43,32 @@ place_EOHOB(UINT8* hob)
     hob[4] = 'B';
 }
 
-void
+EFI_STATUS
 LocateOrNotify(EFI_GUID* guid) {
     EFI_STATUS Status;
     void* ppi = NULL;
 
     Status = PeiServicesLocatePpi(guid, 0, NULL, &ppi);
-    if (!Status) {
+    if (EFI_SUCCESS == Status) {
+        *((UINT8*)hob++) = 'x';
+        *((UINT8*)hob++) = 1;
         *((UINT32*)hob) = 0xFFFFFFFF & (UINTN)ppi;
+        hob += 4;
     } else {
-        *((UINT32*)hob) = (UINT32)Status;
+        *((UINT8*)hob++) = 'S';
+        *((UINT8*)hob++) = 1;
+        *((UINT8*)hob++) = Status & 0xFF;
 
-        EFI_PEI_NOTIFY_DESCRIPTOR notify = {
-            (EFI_PEI_PPI_DESCRIPTOR_NOTIFY_CALLBACK | EFI_PEI_PPI_DESCRIPTOR_TERMINATE_LIST),
-            guid,
-            PpiNotifyCallback
-        };
-        PeiServicesNotifyPpi(&notify);
+        EFI_PEI_NOTIFY_DESCRIPTOR* notify;
+        if (EFI_SUCCESS != (Status = PeiServicesAllocatePool(0xC, (VOID**)&notify)))
+            return Status;
+        notify->Flags = EFI_PEI_PPI_DESCRIPTOR_NOTIFY_CALLBACK | EFI_PEI_PPI_DESCRIPTOR_TERMINATE_LIST;
+        notify->Guid = guid;
+        notify->Notify = PpiNotifyCallback;
+
+        Status = PeiServicesNotifyPpi(notify);
     }
-    hob += 4;
+    return Status;
 }
 
 
@@ -78,13 +85,28 @@ TPMHelloEntryPoint(
     end = hob + 24;
     place_EOHOB(hob + 19);
 
-    *((UINT8*)hob++) = 'x';
-    *((UINT8*)hob++) = 4;
+    EFI_STATUS Status = EFI_SUCCESS;
 
-    LocateOrNotify(&gAmiTreePpiGuid);
-    LocateOrNotify(&gTrEE_HashLogExtendPpiGuid);
-    LocateOrNotify(&gPeiTcgPpiGuid);
-    LocateOrNotify(&gPeiTpmPpiGuid);
+    if (EFI_SUCCESS != (Status = LocateOrNotify(&gAmiTreePpiGuid))) {
+        *((UINT8*)hob++) = 'S';
+        *((UINT8*)hob++) = 1;
+        *((UINT8*)hob++) = Status & 0xFF;
+    }
+    if (EFI_SUCCESS != (Status = LocateOrNotify(&gTrEE_HashLogExtendPpiGuid))) {
+        *((UINT8*)hob++) = 'S';
+        *((UINT8*)hob++) = 1;
+        *((UINT8*)hob++) = Status & 0xFF;
+    }
+    if (EFI_SUCCESS != (Status = LocateOrNotify(&gPeiTcgPpiGuid))) {
+        *((UINT8*)hob++) = 'S';
+        *((UINT8*)hob++) = 1;
+        *((UINT8*)hob++) = Status & 0xFF;
+    }
+    if (EFI_SUCCESS != (Status = LocateOrNotify(&gPeiTpmPpiGuid))) {
+        *((UINT8*)hob++) = 'S';
+        *((UINT8*)hob++) = 1;
+        *((UINT8*)hob++) = Status & 0xFF;
+    }
 
     return EFI_SUCCESS;
 }
