@@ -9,7 +9,8 @@
 extern EFI_GUID gTestHobGuid;
 extern EFI_GUID gAmiTreePpiGuid;
 extern EFI_GUID gTrEE_HashLogExtendPpiGuid;
-extern EFI_GUID gAmiPeiTcgPpiGuid;
+extern EFI_GUID gPeiTcgPpiGuid;
+extern EFI_GUID gPeiTpmPpiGuid;
 
 void* hob = NULL;
 void* end = NULL;
@@ -78,11 +79,12 @@ TPMHelloEntryPoint(
     place_EOHOB(hob + 19);
 
     *((UINT8*)hob++) = 'x';
-    *((UINT8*)hob++) = 3;
+    *((UINT8*)hob++) = 4;
 
     LocateOrNotify(&gAmiTreePpiGuid);
     LocateOrNotify(&gTrEE_HashLogExtendPpiGuid);
-    LocateOrNotify(&gAmiPeiTcgPpiGuid);
+    LocateOrNotify(&gPeiTcgPpiGuid);
+    LocateOrNotify(&gPeiTpmPpiGuid);
 
     return EFI_SUCCESS;
 }
