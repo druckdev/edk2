@@ -27,7 +27,7 @@ PpiNotifyCallback (
     if (hob + 5 < end) {
         *((UINT8*)hob++) = 'x';
         *((UINT8*)hob++) = 1;
-        *((UINT32*)hob)  = (UINT32)Ppi;
+        *((UINT32*)hob)  = 0xFFFFFFFF & (UINTN)Ppi;
         hob += 4;
     }
     return EFI_SUCCESS;
@@ -50,7 +50,7 @@ LocateOrNotify(EFI_GUID* guid) {
 
     Status = PeiServicesLocatePpi(guid, 0, NULL, &ppi);
     if (!Status) {
-        *((UINT32*)hob) = (UINT32)ppi;
+        *((UINT32*)hob) = 0xFFFFFFFF & (UINTN)ppi;
     } else {
         *((UINT32*)hob) = (UINT32)Status;
 
