@@ -79,11 +79,15 @@ TPMHelloEntryPoint(
         IN CONST EFI_PEI_SERVICES    **PeiServices
 ) {
     // https://edk2-docs.gitbook.io/edk-ii-module-writer-s-guide/7_pre-efi_initialization_modules/76_communicate_with_dxe_modules
-    hob = BuildGuidHob(&gTestHobGuid, 24);
-    if (!hob)
+    UINTN len = 24;
+    hob = BuildGuidHob(&gTestHobGuid, len);
+    if (!hob) {
+        if ((hob = BuildGuidHob(&gTestHobGuid, 5)))
+            place_EOHOB(hob);
         return EFI_OUT_OF_RESOURCES;
-    end = hob + 24;
-    place_EOHOB(hob + 19);
+    }
+    end = hob + len;
+    place_EOHOB(end - 5);
 
     EFI_STATUS Status = EFI_SUCCESS;
 
