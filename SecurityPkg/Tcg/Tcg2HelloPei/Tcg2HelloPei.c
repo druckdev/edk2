@@ -49,7 +49,7 @@ LocateOrNotify(EFI_GUID* guid)
     void* ppi = NULL;
 
     Status = PeiServicesLocatePpi(guid, 0, NULL, &ppi);
-    if (Status > -1) {
+    if (EFI_SUCCESS == Status) {
         *((UINT8*)hob++) = 'x';
         *((UINT8*)hob++) = 1;
         *((UINT32*)hob) = 0xFFFFFFFF & (UINTN)ppi;
@@ -60,7 +60,7 @@ LocateOrNotify(EFI_GUID* guid)
         *((UINT8*)hob++) = Status & 0xFF;
 
         EFI_PEI_NOTIFY_DESCRIPTOR* notify;
-        if (-1 < (Status = PeiServicesAllocatePool(0xC, (VOID**)&notify))) {
+        if (EFI_SUCCESS == (Status = PeiServicesAllocatePool(0xC, (VOID**)&notify))) {
             notify->Flags = EFI_PEI_PPI_DESCRIPTOR_NOTIFY_CALLBACK | EFI_PEI_PPI_DESCRIPTOR_TERMINATE_LIST;
             notify->Guid = guid;
             notify->Notify = PpiNotifyCallback;
@@ -69,7 +69,7 @@ LocateOrNotify(EFI_GUID* guid)
         }
     }
 
-    if (Status < 0) {
+    if (EFI_SUCCESS != Status) {
         *((UINT8*)hob++) = 'S';
         *((UINT8*)hob++) = 1;
         *((UINT8*)hob++) = Status & 0xFF;
