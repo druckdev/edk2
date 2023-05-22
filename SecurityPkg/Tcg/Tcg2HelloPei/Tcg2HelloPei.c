@@ -60,13 +60,19 @@ LocateOrNotify(EFI_GUID* guid) {
         *((UINT8*)hob++) = Status & 0xFF;
 
         EFI_PEI_NOTIFY_DESCRIPTOR* notify;
-        if (EFI_SUCCESS != (Status = PeiServicesAllocatePool(0xC, (VOID**)&notify)))
-            return Status;
-        notify->Flags = EFI_PEI_PPI_DESCRIPTOR_NOTIFY_CALLBACK | EFI_PEI_PPI_DESCRIPTOR_TERMINATE_LIST;
-        notify->Guid = guid;
-        notify->Notify = PpiNotifyCallback;
+        if (EFI_SUCCESS == (Status = PeiServicesAllocatePool(0xC, (VOID**)&notify))) {
+            notify->Flags = EFI_PEI_PPI_DESCRIPTOR_NOTIFY_CALLBACK | EFI_PEI_PPI_DESCRIPTOR_TERMINATE_LIST;
+            notify->Guid = guid;
+            notify->Notify = PpiNotifyCallback;
 
-        Status = PeiServicesNotifyPpi(notify);
+            Status = PeiServicesNotifyPpi(notify);
+        }
+    }
+
+    if (EFI_SUCCESS != Status) {
+        *((UINT8*)hob++) = 'S';
+        *((UINT8*)hob++) = 1;
+        *((UINT8*)hob++) = Status & 0xFF;
     }
     return Status;
 }
@@ -89,28 +95,10 @@ TPMHelloEntryPoint(
     end = hob + len;
     place_EOHOB(end - 5);
 
-    EFI_STATUS Status = EFI_SUCCESS;
-
-    if (EFI_SUCCESS != (Status = LocateOrNotify(&gAmiTreePpiGuid))) {
-        *((UINT8*)hob++) = 'S';
-        *((UINT8*)hob++) = 1;
-        *((UINT8*)hob++) = Status & 0xFF;
-    }
-    if (EFI_SUCCESS != (Status = LocateOrNotify(&gTrEE_HashLogExtendPpiGuid))) {
-        *((UINT8*)hob++) = 'S';
-        *((UINT8*)hob++) = 1;
-        *((UINT8*)hob++) = Status & 0xFF;
-    }
-    if (EFI_SUCCESS != (Status = LocateOrNotify(&gPeiTcgPpiGuid))) {
-        *((UINT8*)hob++) = 'S';
-        *((UINT8*)hob++) = 1;
-        *((UINT8*)hob++) = Status & 0xFF;
-    }
-    if (EFI_SUCCESS != (Status = LocateOrNotify(&gPeiTpmPpiGuid))) {
-        *((UINT8*)hob++) = 'S';
-        *((UINT8*)hob++) = 1;
-        *((UINT8*)hob++) = Status & 0xFF;
-    }
+    LocateOrNotify(&gAmiTreePpiGuid);
+    LocateOrNotify(&gTrEE_HashLogExtendPpiGuid);
+    LocateOrNotify(&gPeiTcgPpiGuid);
+    LocateOrNotify(&gPeiTpmPpiGuid);
 
     return EFI_SUCCESS;
 }
