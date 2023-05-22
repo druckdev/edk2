@@ -28,7 +28,7 @@
   PeimEntryPoint
   HobLib
 
-[Guids]
+[Ppis]
   gTcgTestPpiGuid
 
 [Depex]

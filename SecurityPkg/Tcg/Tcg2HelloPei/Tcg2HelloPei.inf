@@ -31,15 +31,14 @@
 
 [Guids]
   gTestHobGuid
+
+[Ppis]
   gAmiTreePpiGuid
   gTrEE_HashLogExtendPpiGuid
   gPeiTcgPpiGuid
   gPeiTpmPpiGuid
   gAmiPlatformSecurityChipGuid
   gTcgTestPpiGuid
-
-[Ppis]
-  gEdkiiPeiFirmwareVolumeInfoPrehashedFvPpiGuid ## CONSUMES
 
 [Depex]
   TRUE
