@@ -13,6 +13,20 @@ extern EFI_GUID gPeiTcgPpiGuid;
 extern EFI_GUID gPeiTpmPpiGuid;
 extern EFI_GUID gAmiPlatformSecurityChipGuid;
 
+EFI_STATUS EFIAPI PpiNotifyCallback(IN EFI_PEI_SERVICES **PeiServices, IN EFI_PEI_NOTIFY_DESCRIPTOR *NotifyDescriptor, IN VOID *Ppi);
+
+EFI_PEI_NOTIFY_DESCRIPTOR PeiTpmPpiDesc = {
+    (EFI_PEI_PPI_DESCRIPTOR_NOTIFY_CALLBACK | EFI_PEI_PPI_DESCRIPTOR_TERMINATE_LIST),
+    &gPeiTpmPpiGuid,
+    PpiNotifyCallback
+};
+
+EFI_PEI_NOTIFY_DESCRIPTOR PeiTcgPpiDesc = {
+    (EFI_PEI_PPI_DESCRIPTOR_NOTIFY_CALLBACK | EFI_PEI_PPI_DESCRIPTOR_TERMINATE_LIST),
+    &gPeiTcgPpiGuid,
+    PpiNotifyCallback
+};
+
 void* hob = NULL;
 void* end = NULL;
 
@@ -43,12 +57,12 @@ place_EOHOB(UINT8* hob)
 }
 
 EFI_STATUS
-LocateOrNotify(EFI_GUID* guid)
+LocateOrNotify(EFI_PEI_NOTIFY_DESCRIPTOR* notify)
 {
     EFI_STATUS Status;
     void* ppi = NULL;
 
-    Status = PeiServicesLocatePpi(guid, 0, NULL, &ppi);
+    Status = PeiServicesLocatePpi(notify->Guid, 0, NULL, &ppi);
     if (EFI_SUCCESS == Status) {
         *((UINT8*)hob++) = 'x';
         *((UINT8*)hob++) = 1;
@@ -59,14 +73,7 @@ LocateOrNotify(EFI_GUID* guid)
         *((UINT8*)hob++) = 1;
         *((UINT8*)hob++) = Status & 0xFF;
 
-        EFI_PEI_NOTIFY_DESCRIPTOR* notify;
-        if (EFI_SUCCESS == (Status = PeiServicesAllocatePool(0xC, (VOID**)&notify))) {
-            notify->Flags = EFI_PEI_PPI_DESCRIPTOR_NOTIFY_CALLBACK | EFI_PEI_PPI_DESCRIPTOR_TERMINATE_LIST;
-            notify->Guid = guid;
-            notify->Notify = PpiNotifyCallback;
-
-            Status = PeiServicesNotifyPpi(notify);
-        }
+        Status = PeiServicesNotifyPpi(notify);
     }
 
     if (EFI_SUCCESS != Status) {
@@ -94,11 +101,8 @@ TPMHelloEntryPoint(IN EFI_PEI_FILE_HANDLE FileHandle,
     end = hob + len;
     place_EOHOB(end - 5);
 
-    LocateOrNotify(&gAmiTreePpiGuid);
-    LocateOrNotify(&gTrEE_HashLogExtendPpiGuid);
-    LocateOrNotify(&gPeiTcgPpiGuid);
-    LocateOrNotify(&gPeiTpmPpiGuid);
-    LocateOrNotify(&gAmiPlatformSecurityChipGuid);
+    LocateOrNotify(&PeiTcgPpiDesc);
+    LocateOrNotify(&PeiTpmPpiDesc);
 
     return EFI_SUCCESS;
 }
