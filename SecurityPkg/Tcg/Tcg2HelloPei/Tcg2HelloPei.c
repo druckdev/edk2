@@ -44,6 +44,11 @@ PpiNotifyCallback(IN EFI_PEI_SERVICES **PeiServices,
                   IN EFI_PEI_NOTIFY_DESCRIPTOR *NotifyDescriptor,
                   IN VOID *Ppi)
 {
+    if (hob + 3 < end) {
+        *((UINT8*)hob++) = 'S';
+        *((UINT8*)hob++) = 1;
+        *((UINT8*)hob++) = EFI_SUCCESS & 0xFF;
+    }
     if (hob + 5 < end) {
         *((UINT8*)hob++) = 'x';
         *((UINT8*)hob++) = 1;
