@@ -11,6 +11,7 @@ extern EFI_GUID gAmiTreePpiGuid;
 extern EFI_GUID gTrEE_HashLogExtendPpiGuid;
 extern EFI_GUID gPeiTcgPpiGuid;
 extern EFI_GUID gPeiTpmPpiGuid;
+extern EFI_GUID gAmiPlatformSecurityChipGuid;
 
 void* hob = NULL;
 void* end = NULL;
@@ -97,6 +98,7 @@ TPMHelloEntryPoint(IN EFI_PEI_FILE_HANDLE FileHandle,
     LocateOrNotify(&gTrEE_HashLogExtendPpiGuid);
     LocateOrNotify(&gPeiTcgPpiGuid);
     LocateOrNotify(&gPeiTpmPpiGuid);
+    LocateOrNotify(&gAmiPlatformSecurityChipGuid);
 
     return EFI_SUCCESS;
 }

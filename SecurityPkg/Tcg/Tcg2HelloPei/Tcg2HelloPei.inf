@@ -35,6 +35,7 @@
   gTrEE_HashLogExtendPpiGuid
   gPeiTcgPpiGuid
   gPeiTpmPpiGuid
+  gAmiPlatformSecurityChipGuid
 
 [Ppis]
   gEdkiiPeiFirmwareVolumeInfoPrehashedFvPpiGuid ## CONSUMES
