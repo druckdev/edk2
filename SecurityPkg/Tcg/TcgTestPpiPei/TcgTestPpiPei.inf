@@ -1,0 +1,35 @@
+[Defines]
+  INF_VERSION                    = 0x00010005
+  BASE_NAME                      = TcgTestPpiPei
+  FILE_GUID                      = 5D753917-9FCC-4907-B4B3-5A2052D8F5E3
+  MODULE_TYPE                    = PEIM
+  VERSION_STRING                 = 1.0
+  ENTRY_POINT                    = TcgTestPpiEntryPoint
+
+#
+# The following information is for reference only and not required by the build tools.
+#
+#  VALID_ARCHITECTURES           = IA32 X64 EBC
+#
+
+[Sources]
+  TcgTestPpiPei.c
+
+[Packages]
+  CryptoPkg/CryptoPkg.dec
+  MdeModulePkg/MdeModulePkg.dec
+  MdePkg/MdePkg.dec
+  SecurityPkg/SecurityPkg.dec
+
+[LibraryClasses]
+  BaseMemoryLib
+  MemoryAllocationLib
+  PeiServicesLib
+  PeimEntryPoint
+  HobLib
+
+[Guids]
+  gTcgTestPpiGuid
+
+[Depex]
+  TRUE

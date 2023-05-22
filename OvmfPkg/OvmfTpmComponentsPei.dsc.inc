@@ -32,4 +32,5 @@
       NULL|SecurityPkg/Library/HashInstanceLibSha512/HashInstanceLibSha512.inf
       NULL|SecurityPkg/Library/HashInstanceLibSm3/HashInstanceLibSm3.inf
   }
+  SecurityPkg/Tcg/TcgTestPpiPei/TcgTestPpiPei.inf
 !endif
