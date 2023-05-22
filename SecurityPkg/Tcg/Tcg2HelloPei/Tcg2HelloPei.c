@@ -12,6 +12,7 @@ extern EFI_GUID gTrEE_HashLogExtendPpiGuid;
 extern EFI_GUID gPeiTcgPpiGuid;
 extern EFI_GUID gPeiTpmPpiGuid;
 extern EFI_GUID gAmiPlatformSecurityChipGuid;
+extern EFI_GUID gTcgTestPpiGuid;
 
 EFI_STATUS EFIAPI PpiNotifyCallback(IN EFI_PEI_SERVICES **PeiServices, IN EFI_PEI_NOTIFY_DESCRIPTOR *NotifyDescriptor, IN VOID *Ppi);
 
@@ -24,6 +25,12 @@ EFI_PEI_NOTIFY_DESCRIPTOR PeiTpmPpiDesc = {
 EFI_PEI_NOTIFY_DESCRIPTOR PeiTcgPpiDesc = {
     (EFI_PEI_PPI_DESCRIPTOR_NOTIFY_CALLBACK | EFI_PEI_PPI_DESCRIPTOR_TERMINATE_LIST),
     &gPeiTcgPpiGuid,
+    PpiNotifyCallback
+};
+
+EFI_PEI_NOTIFY_DESCRIPTOR TcgTestPpiDesc = {
+    (EFI_PEI_PPI_DESCRIPTOR_NOTIFY_CALLBACK | EFI_PEI_PPI_DESCRIPTOR_TERMINATE_LIST),
+    &gTcgTestPpiGuid,
     PpiNotifyCallback
 };
 
@@ -91,7 +98,7 @@ TPMHelloEntryPoint(IN EFI_PEI_FILE_HANDLE FileHandle,
                    IN CONST EFI_PEI_SERVICES **PeiServices)
 {
     // https://edk2-docs.gitbook.io/edk-ii-module-writer-s-guide/7_pre-efi_initialization_modules/76_communicate_with_dxe_modules
-    UINTN len = 32;
+    UINTN len = 64;
     hob = BuildGuidHob(&gTestHobGuid, len);
     if (!hob) {
         if ((hob = BuildGuidHob(&gTestHobGuid, 5)))
@@ -103,6 +110,7 @@ TPMHelloEntryPoint(IN EFI_PEI_FILE_HANDLE FileHandle,
 
     LocateOrNotify(&PeiTcgPpiDesc);
     LocateOrNotify(&PeiTpmPpiDesc);
+    LocateOrNotify(&TcgTestPpiDesc);
 
     return EFI_SUCCESS;
 }

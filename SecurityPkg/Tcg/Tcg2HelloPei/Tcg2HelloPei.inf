@@ -36,6 +36,7 @@
   gPeiTcgPpiGuid
   gPeiTpmPpiGuid
   gAmiPlatformSecurityChipGuid
+  gTcgTestPpiGuid
 
 [Ppis]
   gEdkiiPeiFirmwareVolumeInfoPrehashedFvPpiGuid ## CONSUMES
