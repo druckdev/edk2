@@ -1,9 +1,9 @@
 // vim: set et:
 
 #include <Library/BaseMemoryLib.h>
+#include <Library/HobLib.h>
 #include <Library/MemoryAllocationLib.h>
 #include <Library/PeiServicesLib.h>
-#include <Library/HobLib.h>
 
 
 extern EFI_GUID gTestHobGuid;
@@ -18,11 +18,9 @@ void* end = NULL;
 
 EFI_STATUS
 EFIAPI
-PpiNotifyCallback (
-    IN EFI_PEI_SERVICES          **PeiServices,
-    IN EFI_PEI_NOTIFY_DESCRIPTOR *NotifyDescriptor,
-    IN VOID                      *Ppi
-    )
+PpiNotifyCallback(IN EFI_PEI_SERVICES **PeiServices,
+                  IN EFI_PEI_NOTIFY_DESCRIPTOR *NotifyDescriptor,
+                  IN VOID *Ppi)
 {
     if (hob + 5 < end) {
         *((UINT8*)hob++) = 'x';
@@ -44,7 +42,8 @@ place_EOHOB(UINT8* hob)
 }
 
 EFI_STATUS
-LocateOrNotify(EFI_GUID* guid) {
+LocateOrNotify(EFI_GUID* guid)
+{
     EFI_STATUS Status;
     void* ppi = NULL;
 
@@ -80,10 +79,9 @@ LocateOrNotify(EFI_GUID* guid) {
 
 EFI_STATUS
 EFIAPI
-TPMHelloEntryPoint(
-        IN       EFI_PEI_FILE_HANDLE FileHandle,
-        IN CONST EFI_PEI_SERVICES    **PeiServices
-) {
+TPMHelloEntryPoint(IN EFI_PEI_FILE_HANDLE FileHandle,
+                   IN CONST EFI_PEI_SERVICES **PeiServices)
+{
     // https://edk2-docs.gitbook.io/edk-ii-module-writer-s-guide/7_pre-efi_initialization_modules/76_communicate_with_dxe_modules
     UINTN len = 32;
     hob = BuildGuidHob(&gTestHobGuid, len);
