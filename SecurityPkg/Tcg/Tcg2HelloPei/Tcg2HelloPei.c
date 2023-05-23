@@ -9,12 +9,7 @@
 extern EFI_GUID gTestHobGuid;
 extern EFI_GUID gAmiTreePpiGuid;
 extern EFI_GUID gTrEE_HashLogExtendPpiGuid;
-extern EFI_GUID gPeiTcgPpiGuid;
-extern EFI_GUID gPeiTpmPpiGuid;
-extern EFI_GUID gAmiPlatformSecurityChipGuid;
 extern EFI_GUID gTcgTestPpiGuid;
-extern EFI_GUID gTcgPeiPolicyGuid;
-extern EFI_GUID gTCMPEIPpiGuid;
 
 EFI_STATUS EFIAPI PpiNotifyCallback(IN EFI_PEI_SERVICES **PeiServices, IN EFI_PEI_NOTIFY_DESCRIPTOR *NotifyDescriptor, IN VOID *Ppi);
 
@@ -28,29 +23,9 @@ EFI_PEI_NOTIFY_DESCRIPTOR TrEE_HashLogExtendPpiDesc = {
     &gTrEE_HashLogExtendPpiGuid,
     PpiNotifyCallback
 };
-EFI_PEI_NOTIFY_DESCRIPTOR PeiTcgPpiDesc = {
+EFI_PEI_NOTIFY_DESCRIPTOR TcgTestPpiDesc = {
     (EFI_PEI_PPI_DESCRIPTOR_NOTIFY_CALLBACK | EFI_PEI_PPI_DESCRIPTOR_TERMINATE_LIST),
-    &gPeiTcgPpiGuid,
-    PpiNotifyCallback
-};
-EFI_PEI_NOTIFY_DESCRIPTOR PeiTpmPpiDesc = {
-    (EFI_PEI_PPI_DESCRIPTOR_NOTIFY_CALLBACK | EFI_PEI_PPI_DESCRIPTOR_TERMINATE_LIST),
-    &gPeiTpmPpiGuid,
-    PpiNotifyCallback
-};
-EFI_PEI_NOTIFY_DESCRIPTOR AmiPlatformSecurityChipDesc = {
-    (EFI_PEI_PPI_DESCRIPTOR_NOTIFY_CALLBACK | EFI_PEI_PPI_DESCRIPTOR_TERMINATE_LIST),
-    &gAmiPlatformSecurityChipGuid,
-    PpiNotifyCallback
-};
-EFI_PEI_NOTIFY_DESCRIPTOR TcgPeiPolicyDesc = {
-    (EFI_PEI_PPI_DESCRIPTOR_NOTIFY_CALLBACK | EFI_PEI_PPI_DESCRIPTOR_TERMINATE_LIST),
-    &gTcgPeiPolicyGuid,
-    PpiNotifyCallback
-};
-EFI_PEI_NOTIFY_DESCRIPTOR TCMPEIPpiDesc = {
-    (EFI_PEI_PPI_DESCRIPTOR_NOTIFY_CALLBACK | EFI_PEI_PPI_DESCRIPTOR_TERMINATE_LIST),
-    &gTCMPEIPpiGuid,
+    &gTcgTestPpiGuid,
     PpiNotifyCallback
 };
 
@@ -109,6 +84,10 @@ LocateOrNotify(EFI_PEI_NOTIFY_DESCRIPTOR* notify)
         *((UINT32*)hob) = 0xFFFFFFFF & (UINTN)ppi;
         hob += 4;
     } else {
+        *((UINT8*)hob++) = 'S';
+        *((UINT8*)hob++) = 1;
+        *((UINT8*)hob++) = Status & 0xFF;
+
         if (EFI_SUCCESS != (Status = PeiServicesNotifyPpi(notify))) {
             *((UINT8*)hob++) = 'S';
             *((UINT8*)hob++) = 1;
@@ -138,11 +117,6 @@ TPMHelloEntryPoint(IN EFI_PEI_FILE_HANDLE FileHandle,
 
     LocateOrNotify(&AmiTreePpiDesc);
     LocateOrNotify(&TrEE_HashLogExtendPpiDesc);
-    LocateOrNotify(&PeiTcgPpiDesc);
-    LocateOrNotify(&PeiTpmPpiDesc);
-    LocateOrNotify(&AmiPlatformSecurityChipDesc);
-    LocateOrNotify(&TcgPeiPolicyDesc);
-    LocateOrNotify(&TCMPEIPpiDesc);
 
     return EFI_SUCCESS;
 }

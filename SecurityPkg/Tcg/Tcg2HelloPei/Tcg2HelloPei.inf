@@ -35,12 +35,7 @@
 [Ppis]
   gAmiTreePpiGuid
   gTrEE_HashLogExtendPpiGuid
-  gPeiTcgPpiGuid
-  gPeiTpmPpiGuid
-  gAmiPlatformSecurityChipGuid
   gTcgTestPpiGuid
-  gTcgPeiPolicyGuid
-  gTCMPEIPpiGuid
 
 [Depex]
   gAmiTreePpiGuid
