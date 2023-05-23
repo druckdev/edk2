@@ -13,26 +13,47 @@ extern EFI_GUID gPeiTcgPpiGuid;
 extern EFI_GUID gPeiTpmPpiGuid;
 extern EFI_GUID gAmiPlatformSecurityChipGuid;
 extern EFI_GUID gTcgTestPpiGuid;
+extern EFI_GUID gTcgPeiPolicyGuid;
+extern EFI_GUID gTCMPEIPpiGuid;
 
 EFI_STATUS EFIAPI PpiNotifyCallback(IN EFI_PEI_SERVICES **PeiServices, IN EFI_PEI_NOTIFY_DESCRIPTOR *NotifyDescriptor, IN VOID *Ppi);
 
-EFI_PEI_NOTIFY_DESCRIPTOR PeiTpmPpiDesc = {
+EFI_PEI_NOTIFY_DESCRIPTOR AmiTreePpiDesc = {
     (EFI_PEI_PPI_DESCRIPTOR_NOTIFY_CALLBACK | EFI_PEI_PPI_DESCRIPTOR_TERMINATE_LIST),
-    &gPeiTpmPpiGuid,
+    &gAmiTreePpiGuid,
     PpiNotifyCallback
 };
-
+EFI_PEI_NOTIFY_DESCRIPTOR TrEE_HashLogExtendPpiDesc = {
+    (EFI_PEI_PPI_DESCRIPTOR_NOTIFY_CALLBACK | EFI_PEI_PPI_DESCRIPTOR_TERMINATE_LIST),
+    &gTrEE_HashLogExtendPpiGuid,
+    PpiNotifyCallback
+};
 EFI_PEI_NOTIFY_DESCRIPTOR PeiTcgPpiDesc = {
     (EFI_PEI_PPI_DESCRIPTOR_NOTIFY_CALLBACK | EFI_PEI_PPI_DESCRIPTOR_TERMINATE_LIST),
     &gPeiTcgPpiGuid,
     PpiNotifyCallback
 };
-
-EFI_PEI_NOTIFY_DESCRIPTOR TcgTestPpiDesc = {
+EFI_PEI_NOTIFY_DESCRIPTOR PeiTpmPpiDesc = {
     (EFI_PEI_PPI_DESCRIPTOR_NOTIFY_CALLBACK | EFI_PEI_PPI_DESCRIPTOR_TERMINATE_LIST),
-    &gTcgTestPpiGuid,
+    &gPeiTpmPpiGuid,
     PpiNotifyCallback
 };
+EFI_PEI_NOTIFY_DESCRIPTOR AmiPlatformSecurityChipDesc = {
+    (EFI_PEI_PPI_DESCRIPTOR_NOTIFY_CALLBACK | EFI_PEI_PPI_DESCRIPTOR_TERMINATE_LIST),
+    &gAmiPlatformSecurityChipGuid,
+    PpiNotifyCallback
+};
+EFI_PEI_NOTIFY_DESCRIPTOR TcgPeiPolicyDesc = {
+    (EFI_PEI_PPI_DESCRIPTOR_NOTIFY_CALLBACK | EFI_PEI_PPI_DESCRIPTOR_TERMINATE_LIST),
+    &gTcgPeiPolicyGuid,
+    PpiNotifyCallback
+};
+EFI_PEI_NOTIFY_DESCRIPTOR TCMPEIPpiDesc = {
+    (EFI_PEI_PPI_DESCRIPTOR_NOTIFY_CALLBACK | EFI_PEI_PPI_DESCRIPTOR_TERMINATE_LIST),
+    &gTCMPEIPpiGuid,
+    PpiNotifyCallback
+};
+
 
 void* hob = NULL;
 void* end = NULL;
@@ -44,15 +65,17 @@ PpiNotifyCallback(IN EFI_PEI_SERVICES **PeiServices,
                   IN EFI_PEI_NOTIFY_DESCRIPTOR *NotifyDescriptor,
                   IN VOID *Ppi)
 {
-    if (hob + 3 < end) {
+    if (hob + 2 < end) {
         *((UINT8*)hob++) = 'S';
         *((UINT8*)hob++) = 1;
         *((UINT8*)hob++) = EFI_SUCCESS & 0xFF;
     }
-    if (hob + 5 < end) {
+    if (hob + 9 < end) {
         *((UINT8*)hob++) = 'x';
-        *((UINT8*)hob++) = 1;
-        *((UINT32*)hob)  = 0xFFFFFFFF & (UINTN)Ppi;
+        *((UINT8*)hob++) = 2;
+        *((UINT32*)hob) = NotifyDescriptor->Guid->Data1;
+        hob += 4;
+        *((UINT32*)hob) = 0xFFFFFFFF & (UINTN)Ppi;
         hob += 4;
     }
     return EFI_SUCCESS;
@@ -76,23 +99,23 @@ LocateOrNotify(EFI_PEI_NOTIFY_DESCRIPTOR* notify)
 
     Status = PeiServicesLocatePpi(notify->Guid, 0, NULL, &ppi);
     if (EFI_SUCCESS == Status) {
-        *((UINT8*)hob++) = 'x';
+        *((UINT8*)hob++) = 'S';
         *((UINT8*)hob++) = 1;
+        *((UINT8*)hob++) = EFI_SUCCESS & 0xFF;
+        *((UINT8*)hob++) = 'x';
+        *((UINT8*)hob++) = 2;
+        *((UINT32*)hob) = notify->Guid->Data1;
+        hob += 4;
         *((UINT32*)hob) = 0xFFFFFFFF & (UINTN)ppi;
         hob += 4;
     } else {
-        *((UINT8*)hob++) = 'S';
-        *((UINT8*)hob++) = 1;
-        *((UINT8*)hob++) = Status & 0xFF;
-
-        Status = PeiServicesNotifyPpi(notify);
+        if (EFI_SUCCESS != (Status = PeiServicesNotifyPpi(notify))) {
+            *((UINT8*)hob++) = 'S';
+            *((UINT8*)hob++) = 1;
+            *((UINT8*)hob++) = Status & 0xFF;
+        }
     }
 
-    if (EFI_SUCCESS != Status) {
-        *((UINT8*)hob++) = 'S';
-        *((UINT8*)hob++) = 1;
-        *((UINT8*)hob++) = Status & 0xFF;
-    }
     return Status;
 }
 
@@ -103,7 +126,7 @@ TPMHelloEntryPoint(IN EFI_PEI_FILE_HANDLE FileHandle,
                    IN CONST EFI_PEI_SERVICES **PeiServices)
 {
     // https://edk2-docs.gitbook.io/edk-ii-module-writer-s-guide/7_pre-efi_initialization_modules/76_communicate_with_dxe_modules
-    UINTN len = 64;
+    UINTN len = 128;
     hob = BuildGuidHob(&gTestHobGuid, len);
     if (!hob) {
         if ((hob = BuildGuidHob(&gTestHobGuid, 5)))
@@ -113,9 +136,13 @@ TPMHelloEntryPoint(IN EFI_PEI_FILE_HANDLE FileHandle,
     end = hob + len;
     place_EOHOB(end - 5);
 
+    LocateOrNotify(&AmiTreePpiDesc);
+    LocateOrNotify(&TrEE_HashLogExtendPpiDesc);
     LocateOrNotify(&PeiTcgPpiDesc);
     LocateOrNotify(&PeiTpmPpiDesc);
-    LocateOrNotify(&TcgTestPpiDesc);
+    LocateOrNotify(&AmiPlatformSecurityChipDesc);
+    LocateOrNotify(&TcgPeiPolicyDesc);
+    LocateOrNotify(&TCMPEIPpiDesc);
 
     return EFI_SUCCESS;
 }

@@ -39,6 +39,9 @@
   gPeiTpmPpiGuid
   gAmiPlatformSecurityChipGuid
   gTcgTestPpiGuid
+  gTcgPeiPolicyGuid
+  gTCMPEIPpiGuid
 
 [Depex]
-  TRUE
+  gAmiTreePpiGuid
+
