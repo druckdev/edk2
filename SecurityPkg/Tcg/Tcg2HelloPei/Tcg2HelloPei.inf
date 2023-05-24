@@ -34,6 +34,7 @@
   gAmiTreePpiGuid
   gTrEE_HashLogExtendPpiGuid
   gTcgTestPpiGuid
+  gUnmeasuredRockPpiGuid
 
 [Depex]
   gAmiTreePpiGuid

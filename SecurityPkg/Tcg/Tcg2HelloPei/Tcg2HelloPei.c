@@ -10,6 +10,7 @@ extern EFI_GUID gTestHobGuid;
 extern EFI_GUID gAmiTreePpiGuid;
 extern EFI_GUID gTrEE_HashLogExtendPpiGuid;
 extern EFI_GUID gTcgTestPpiGuid;
+extern EFI_GUID gUnmeasuredRockPpiGuid;
 
 EFI_STATUS EFIAPI PpiNotifyCallback(IN EFI_PEI_SERVICES **PeiServices, IN EFI_PEI_NOTIFY_DESCRIPTOR *NotifyDescriptor, IN VOID *Ppi);
 
@@ -27,6 +28,17 @@ EFI_PEI_NOTIFY_DESCRIPTOR TcgTestPpiDesc = {
     (EFI_PEI_PPI_DESCRIPTOR_NOTIFY_CALLBACK | EFI_PEI_PPI_DESCRIPTOR_TERMINATE_LIST),
     &gTcgTestPpiGuid,
     PpiNotifyCallback
+};
+EFI_PEI_NOTIFY_DESCRIPTOR UnmeasuredRockNotifyDesc = {
+    (EFI_PEI_PPI_DESCRIPTOR_NOTIFY_CALLBACK | EFI_PEI_PPI_DESCRIPTOR_TERMINATE_LIST),
+    &gUnmeasuredRockPpiGuid,
+    PpiNotifyCallback
+};
+
+EFI_PEI_PPI_DESCRIPTOR UmeasuredRockPpiDesc = {
+    (EFI_PEI_PPI_DESCRIPTOR_PPI | EFI_PEI_PPI_DESCRIPTOR_TERMINATE_LIST),
+    &gUnmeasuredRockPpiGuid,
+    &gUnmeasuredRockPpiGuid
 };
 
 struct AmiTreePpi {
@@ -181,6 +193,9 @@ TPMHelloEntryPoint(IN EFI_PEI_FILE_HANDLE FileHandle,
     place_EOHOB(end - 5);
 
     LocateOrNotify(&AmiTreePpiDesc);
+
+    LocateOrNotify(&UnmeasuredRockNotifyDesc);
+    PeiServicesInstallPpi(&UmeasuredRockPpiDesc);
 
     EFI_STATUS Status = EFI_SUCCESS;
     struct AmiTreePpi* ppi;
