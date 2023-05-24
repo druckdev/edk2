@@ -16,14 +16,12 @@
   Tcg2HelloPei.c
 
 [Packages]
-  CryptoPkg/CryptoPkg.dec
   MdeModulePkg/MdeModulePkg.dec
   MdePkg/MdePkg.dec
   SecurityPkg/SecurityPkg.dec
 
 [LibraryClasses]
   BaseMemoryLib
-  HashLib
   MemoryAllocationLib
   PeiServicesLib
   PeimEntryPoint
