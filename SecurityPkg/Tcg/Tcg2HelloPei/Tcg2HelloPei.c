@@ -144,12 +144,14 @@ place_EOHOB(UINT8* hob)
 }
 
 EFI_STATUS
-LocateOrNotify(EFI_PEI_NOTIFY_DESCRIPTOR* notify)
+LocateOrNotify(EFI_PEI_NOTIFY_DESCRIPTOR* notify, void** ppi)
 {
     EFI_STATUS Status;
-    void* ppi = NULL;
 
-    Status = PeiServicesLocatePpi(notify->Guid, 0, NULL, &ppi);
+    void* throwaway_ppi;
+    ppi = ppi ? ppi : &throwaway_ppi;
+
+    Status = PeiServicesLocatePpi(notify->Guid, 0, NULL, ppi);
     if (EFI_SUCCESS == Status) {
         *((UINT8*)hob++) = 'S';
         *((UINT8*)hob++) = 1;
@@ -158,7 +160,7 @@ LocateOrNotify(EFI_PEI_NOTIFY_DESCRIPTOR* notify)
         *((UINT8*)hob++) = 2;
         *((UINT32*)hob) = notify->Guid->Data1;
         hob += 4;
-        *((UINT32*)hob) = 0xFFFFFFFF & (UINTN)ppi;
+        *((UINT32*)hob) = 0xFFFFFFFF & (UINTN)(*ppi);
         hob += 4;
     } else {
         *((UINT8*)hob++) = 'S';
@@ -192,20 +194,13 @@ TPMHelloEntryPoint(IN EFI_PEI_FILE_HANDLE FileHandle,
     end = hob + len;
     place_EOHOB(end - 5);
 
-    LocateOrNotify(&AmiTreePpiDesc);
-
-    LocateOrNotify(&UnmeasuredRockNotifyDesc);
+    LocateOrNotify(&UnmeasuredRockNotifyDesc, NULL);
     PeiServicesInstallPpi(&UmeasuredRockPpiDesc);
 
-    EFI_STATUS Status = EFI_SUCCESS;
     struct AmiTreePpi* ppi;
-    Status = PeiServicesLocatePpi(&gAmiTreePpiGuid, 0, NULL, (VOID**)&ppi);
-    if (EFI_SUCCESS == Status) {
-        Status = (*(ppi->hashlog_extend_maybe))(ppi, 0, 0, event.Event, 0, 0x10, 0, &event);
+    if (EFI_SUCCESS == LocateOrNotify(&AmiTreePpiDesc, (VOID**)&ppi)) {
+        (*(ppi->hashlog_extend_maybe))(ppi, 0, 0, event.Event, 0, 0x10, 0, &event);
     }
-    *((UINT8*)hob++) = 'S';
-    *((UINT8*)hob++) = 1;
-    *((UINT8*)hob++) = Status & 0xFF;
 
     return EFI_SUCCESS;
 }
