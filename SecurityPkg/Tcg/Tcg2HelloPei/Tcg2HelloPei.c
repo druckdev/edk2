@@ -6,6 +6,11 @@
 #include <Library/PeiServicesLib.h>
 
 
+// before EOHOB
+#define InstallCount ((UINT32*)(end - 5 - 4))
+#define TreeInstallCount ((UINT32*)(end - 5 - 8))
+
+
 extern EFI_GUID gTestHobGuid;
 extern EFI_GUID gAmiTreePpiGuid;
 extern EFI_GUID gTrEE_HashLogExtendPpiGuid;
@@ -106,6 +111,7 @@ struct TrEE_EVENT event = {
     { 0xcafebaeb, 0xcafebaeb, 0xcafebaeb, 0xcafebaeb }
 };
 
+EFI_PEI_INSTALL_PPI RealInstallPpi;
 
 void* hob = NULL;
 void* end = NULL;
@@ -180,11 +186,24 @@ LocateOrNotify(EFI_PEI_NOTIFY_DESCRIPTOR* notify, void** ppi)
 
 EFI_STATUS
 EFIAPI
+HookedInstallPpi(IN CONST EFI_PEI_SERVICES** PeiServices,
+                 IN CONST EFI_PEI_PPI_DESCRIPTOR *PpiList)
+{
+    (*InstallCount)++;
+
+    if (PpiList && PpiList->Guid && PpiList->Guid->Data1 == gAmiTreePpiGuid.Data1)
+        (*TreeInstallCount)++;
+
+    return RealInstallPpi(PeiServices, PpiList);
+}
+
+EFI_STATUS
+EFIAPI
 TPMHelloEntryPoint(IN EFI_PEI_FILE_HANDLE FileHandle,
                    IN CONST EFI_PEI_SERVICES **PeiServices)
 {
     // https://edk2-docs.gitbook.io/edk-ii-module-writer-s-guide/7_pre-efi_initialization_modules/76_communicate_with_dxe_modules
-    UINTN len = 128;
+    UINTN len = 32;
     hob = BuildGuidHob(&gTestHobGuid, len);
     if (!hob) {
         if ((hob = BuildGuidHob(&gTestHobGuid, 5)))
@@ -193,6 +212,11 @@ TPMHelloEntryPoint(IN EFI_PEI_FILE_HANDLE FileHandle,
     }
     end = hob + len;
     place_EOHOB(end - 5);
+
+    RealInstallPpi = PeiServices[0]->InstallPpi;
+    ((EFI_PEI_SERVICES**)PeiServices)[0]->InstallPpi = HookedInstallPpi;
+
+    return EFI_SUCCESS;
 
     LocateOrNotify(&UnmeasuredRockNotifyDesc, NULL);
     PeiServicesInstallPpi(&UmeasuredRockPpiDesc);
