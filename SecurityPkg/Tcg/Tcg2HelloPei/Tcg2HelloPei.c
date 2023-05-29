@@ -47,6 +47,8 @@ EFI_PEI_PPI_DESCRIPTOR UmeasuredRockPpiDesc = {
     &gUnmeasuredRockPpiGuid
 };
 
+#pragma pack (1)
+
 struct AmiTreePpi {
     void * get_capability_maybe;
     void * get_eventlog_maybe;
@@ -112,6 +114,8 @@ struct AmiHashLogEvent {
     TPMT_HA Digests[HASH_COUNT];
     UINT32 EventSize;
 };
+
+#pragma pack ()
 
 struct TrEE_EVENT event = {
     0x22,
@@ -216,7 +220,7 @@ TPMHelloEntryPoint(IN EFI_PEI_FILE_HANDLE FileHandle,
                    IN CONST EFI_PEI_SERVICES **PeiServices)
 {
     // https://edk2-docs.gitbook.io/edk-ii-module-writer-s-guide/7_pre-efi_initialization_modules/76_communicate_with_dxe_modules
-    UINTN len = 32;
+    UINTN len = 64;
     hob = BuildGuidHob(&gTestHobGuid, len);
     if (!hob) {
         if ((hob = BuildGuidHob(&gTestHobGuid, 5)))
@@ -232,20 +236,24 @@ TPMHelloEntryPoint(IN EFI_PEI_FILE_HANDLE FileHandle,
     if (EFI_SUCCESS == LocateOrNotify(&TrEE_HashLogExtendPpiDesc, (VOID**)&HashLogPpi)
             && EFI_SUCCESS == LocateOrNotify(&AmiTreePpiDesc, (VOID**)&TreePpi)) {
 
-        void* fv_address = (void*)0xFF92F000;
+        UINT32 extra[4] = {0xFF92F000, 0, 0x4D1000, 0};
         struct AmiHashLogEvent event = {
-            0,
-            EV_POST_CODE,
-            1,
-            {
-                {
-                    .hashAlg = TPM_ALG_SHA256,
-                    .digest = { .sha256 = "\xCA\xFE\xBE\xEF\xCA\xFE\xBE\xEF\xCA\xFE\xBE\xEF\xCA\xFE\xBE\xEF\xCA\xFE\xBE\xEF\xCA\xFE\xBE\xEF\xCA\xFE\xBE\xEF\xCA\xFE\xBE\xEF" }
-                },
-            },
-            0x10
+            .PCRIndex = 0,
+            .EventType = EV_POST_CODE,
+            .NumAlgos = 1,
+            .Digests = { {
+                .hashAlg = TPM_ALG_SHA256,
+                .digest = {
+                    .sha256 = "\xCA\xFE\xBE\xEF\xCA\xFE\xBE\xEF\xCA\xFE\xBE\xEF\xCA\xFE\xBE\xEF\xCA\xFE\xBE\xEF\xCA\xFE\xBE\xEF\xCA\xFE\xBE\xEF\xCA\xFE\xBE\xEF"
+                }
+            }, {0}, {0}, {0}, {0} },
+            .EventSize = 0x10
         };
-        (*(HashLogPpi->AmiHashLogExtend))(PeiServices, TreePpi, 0, 0, 0, 0, &event, &fv_address);
+
+        *((UINT8*)hob++) = 'S';
+        *((UINT8*)hob++) = 1;
+        *((UINT8*)hob++) = 0xFF & \
+                           (*(HashLogPpi->AmiHashLogExtend))(PeiServices, TreePpi, 0, 0, 0, 0, &event, &extra);
     }
 
     return EFI_SUCCESS;
