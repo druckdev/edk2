@@ -37,5 +37,5 @@
   gUnmeasuredRockPpiGuid
 
 [Depex]
-  TRUE
+  gAmiTreePpiGuid
 

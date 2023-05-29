@@ -1,5 +1,6 @@
 // vim: set et:
 
+#include <IndustryStandard/Tpm20.h>
 #include <Library/BaseMemoryLib.h>
 #include <Library/HobLib.h>
 #include <Library/MemoryAllocationLib.h>
@@ -53,6 +54,10 @@ struct AmiTreePpi {
     void * submit_command_maybe;
 };
 
+struct AmiHashLogExtendPpi {
+    EFI_STATUS (*AmiHashLogExtend)(const EFI_PEI_SERVICES**, void*, UINTN, UINTN, UINTN, UINTN, void*, void*);
+};
+
 typedef enum EFI_TCG_EVENT_TYPES {
     EV_PREBOOT_CERT=0,
     EV_POST_CODE=1,
@@ -98,6 +103,14 @@ struct TrEE_EVENT {
     UINT32 Size;
     struct TrEE_EVENT_HEADER Header;
     UINT32 Event[4];
+};
+
+struct AmiHashLogEvent {
+    UINT32 PCRIndex;
+    UINT32 EventType;
+    UINT32 NumAlgos;
+    TPMT_HA Digests[HASH_COUNT];
+    UINT32 EventSize;
 };
 
 struct TrEE_EVENT event = {
@@ -213,17 +226,26 @@ TPMHelloEntryPoint(IN EFI_PEI_FILE_HANDLE FileHandle,
     end = hob + len;
     place_EOHOB(end - 5);
 
-    RealInstallPpi = PeiServices[0]->InstallPpi;
-    ((EFI_PEI_SERVICES**)PeiServices)[0]->InstallPpi = HookedInstallPpi;
+    struct AmiHashLogExtendPpi* HashLogPpi;
+    struct AmiTreePpi* TreePpi;
 
-    return EFI_SUCCESS;
+    if (EFI_SUCCESS == LocateOrNotify(&TrEE_HashLogExtendPpiDesc, (VOID**)&HashLogPpi)
+            && EFI_SUCCESS == LocateOrNotify(&AmiTreePpiDesc, (VOID**)&TreePpi)) {
 
-    LocateOrNotify(&UnmeasuredRockNotifyDesc, NULL);
-    PeiServicesInstallPpi(&UmeasuredRockPpiDesc);
-
-    struct AmiTreePpi* ppi;
-    if (EFI_SUCCESS == LocateOrNotify(&AmiTreePpiDesc, (VOID**)&ppi)) {
-        (*(ppi->hashlog_extend_maybe))(ppi, 0, 0, event.Event, 0, 0x10, 0, &event);
+        void* fv_address = (void*)0xFF92F000;
+        struct AmiHashLogEvent event = {
+            0,
+            EV_POST_CODE,
+            1,
+            {
+                {
+                    .hashAlg = TPM_ALG_SHA256,
+                    .digest = { .sha256 = "\xCA\xFE\xBE\xEF\xCA\xFE\xBE\xEF\xCA\xFE\xBE\xEF\xCA\xFE\xBE\xEF\xCA\xFE\xBE\xEF\xCA\xFE\xBE\xEF\xCA\xFE\xBE\xEF\xCA\xFE\xBE\xEF" }
+                },
+            },
+            0x10
+        };
+        (*(HashLogPpi->AmiHashLogExtend))(PeiServices, TreePpi, 0, 0, 0, 0, &event, &fv_address);
     }
 
     return EFI_SUCCESS;
