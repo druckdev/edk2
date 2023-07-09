@@ -336,6 +336,7 @@
   }
 
   SecurityPkg/Tcg/Tcg2HelloPei/Tcg2HelloPei.inf
+  SecurityPkg/Tcg/UnmeasuredBoot/UnmeasuredBoot.inf
 
   SecurityPkg/Tcg/Tcg2PlatformPei/Tcg2PlatformPei.inf {
     <LibraryClasses>

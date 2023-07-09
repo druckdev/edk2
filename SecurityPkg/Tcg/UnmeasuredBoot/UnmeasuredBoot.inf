@@ -1,0 +1,41 @@
+[Defines]
+  INF_VERSION                    = 0x00010005
+  BASE_NAME                      = UnmeasuredBoot
+  FILE_GUID                      = CAFEBEEF-4FD1-43D0-8878-E91635B5B7BC
+  MODULE_TYPE                    = PEIM
+  VERSION_STRING                 = 1.0
+  ENTRY_POINT                    = EntryPoint
+
+#
+# The following information is for reference only and not required by the build tools.
+#
+#  VALID_ARCHITECTURES           = IA32 X64 EBC
+#
+
+[Sources]
+  UnmeasuredBoot.c
+
+[Packages]
+  MdeModulePkg/MdeModulePkg.dec
+  MdePkg/MdePkg.dec
+  SecurityPkg/SecurityPkg.dec
+
+[LibraryClasses]
+  BaseMemoryLib
+  MemoryAllocationLib
+  PeiServicesLib
+  PeimEntryPoint
+  HobLib
+
+[Guids]
+  gTestHobGuid
+
+[Ppis]
+  gAmiTreePpiGuid
+  gTrEE_HashLogExtendPpiGuid
+  gTcgTestPpiGuid
+  gUnmeasuredRockPpiGuid
+
+[Depex]
+  gAmiTreePpiGuid
+

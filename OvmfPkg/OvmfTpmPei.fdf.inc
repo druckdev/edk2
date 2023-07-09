@@ -12,6 +12,7 @@ INF  OvmfPkg/Tcg/Tcg2Config/Tcg2ConfigPei.inf
 !endif
 INF  SecurityPkg/Tcg/Tcg2Pei/Tcg2Pei.inf
 INF  SecurityPkg/Tcg/Tcg2HelloPei/Tcg2HelloPei.inf
+INF  SecurityPkg/Tcg/UnmeasuredBoot/UnmeasuredBoot.inf
 INF  SecurityPkg/Tcg/Tcg2PlatformPei/Tcg2PlatformPei.inf
 INF  SecurityPkg/Tcg/TcgTestPpiPei/TcgTestPpiPei.inf
 !endif

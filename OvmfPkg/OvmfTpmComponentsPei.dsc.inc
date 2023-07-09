@@ -24,5 +24,6 @@
       TpmPlatformHierarchyLib|SecurityPkg/Library/PeiDxeTpmPlatformHierarchyLib/PeiDxeTpmPlatformHierarchyLib.inf
   }
   SecurityPkg/Tcg/Tcg2HelloPei/Tcg2HelloPei.inf
+  SecurityPkg/Tcg/UnmeasuredBoot/UnmeasuredBoot.inf
   SecurityPkg/Tcg/TcgTestPpiPei/TcgTestPpiPei.inf
 !endif
