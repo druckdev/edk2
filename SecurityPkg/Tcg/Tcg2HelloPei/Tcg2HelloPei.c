@@ -1,6 +1,8 @@
 // vim: set et:
 
 #include <IndustryStandard/Tpm20.h>
+#include <IndustryStandard/UefiTcgPlatform.h>
+#include <Protocol/TrEEProtocol.h>
 #include <Library/BaseMemoryLib.h>
 #include <Library/HobLib.h>
 #include <Library/MemoryAllocationLib.h>
@@ -60,51 +62,10 @@ struct AmiHashLogExtendPpi {
     EFI_STATUS (*AmiHashLogExtend)(const EFI_PEI_SERVICES**, void*, UINTN, UINTN, UINTN, UINTN, void*, void*);
 };
 
-typedef enum EFI_TCG_EVENT_TYPES {
-    EV_PREBOOT_CERT=0,
-    EV_POST_CODE=1,
-    EV_NO_ACTION=3,
-    EV_SEPARATOR=4,
-    EV_ACTION=5,
-    EV_EVENT_TAG=6,
-    EV_S_CRTM_CONTENTS=7,
-    EV_S_CRTM_VERSION=8,
-    EV_CPU_MICROCODE=9,
-    EV_PLATFORM_CONFIG_FLAGS=10,
-    EV_TABLE_OF_DEVICES=11,
-    EV_COMPACT_HASH=12,
-    EV_NONHOST_CODE=15,
-    EV_NONHOST_CONFIG=16,
-    EV_NONHOST_INFO=17,
-    EV_OMIT_BOOT_DEVICE_EVENTS=18,
-    EV_EFI_EVENT_BASE=2147483648,
-    EV_EFI_VARIABLE_DRIVER_CONFIG=2147483649,
-    EV_EFI_VARIABLE_BOOT=2147483650,
-    EV_EFI_BOOT_SERVICES_APPLICATION=2147483651,
-    EV_EFI_BOOT_SERVICES_DRIVER=2147483652,
-    EV_EFI_GPT_EVENT=2147483654,
-    EV_EFI_ACTION=2147483655,
-    EV_EFI_HANDOFF_TABLES=2147483656,
-    EV_EFI_PLATFORM_FIRMWARE_BLOB=2147483657,
-    EV_EFI_PLATFORM_FIRMWARE_BLOB2=2147483658,
-    EV_EFI_HANDOFF_TABLES2=2147483659,
-    EV_EFI_HCRTM_EVENT=2147483664,
-    EV_EFI_VARIABLE_AUTHORITY=2147483872,
-    EV_EFI_SPDM_FIRMWARE_BLOB=2147483873,
-    EV_EFI_SPDM_FIRMWARE_CONFIG=2147483874
-} EFI_TCG_EVENT_TYPES;
-
-struct TrEE_EVENT_HEADER {
-    UINT32 HeaderSize;
-    UINT16 HeaderVersion;
-    UINT32 PCRIndex;
-    enum EFI_TCG_EVENT_TYPES EventType;
-};
-
 struct TrEE_EVENT {
     UINT32 Size;
-    struct TrEE_EVENT_HEADER Header;
-    UINT32 Event[4];
+    TrEE_EVENT_HEADER Header;
+    UINT8 Event[];
 };
 
 struct AmiHashLogEvent {
@@ -125,7 +86,7 @@ struct TrEE_EVENT event = {
         0,
         EV_S_CRTM_VERSION
     },
-    { 0xcafebaeb, 0xcafebaeb, 0xcafebaeb, 0xcafebaeb }
+    { 0xCA, 0xFE, 0xBE, 0xEF, 0xCA, 0xFE, 0xBE, 0xEF, 0xCA, 0xFE, 0xBE, 0xEF, 0xCA, 0xFE, 0xBE, 0xEF }
 };
 
 EFI_PEI_INSTALL_PPI RealInstallPpi;
