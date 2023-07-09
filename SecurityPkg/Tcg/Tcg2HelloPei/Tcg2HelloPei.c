@@ -59,7 +59,7 @@ struct AmiTreePpi {
 };
 
 struct AmiHashLogExtendPpi {
-    EFI_STATUS (*AmiHashLogExtend)(const EFI_PEI_SERVICES**, void*, UINTN, UINTN, UINTN, UINTN, void*, void*);
+    EFI_STATUS (*_HashLogExtendEvent)(const EFI_PEI_SERVICES**, void*, UINTN, UINTN, UINTN, UINTN, void*, void*);
 };
 
 struct TrEE_EVENT {
@@ -214,7 +214,7 @@ TPMHelloEntryPoint(IN EFI_PEI_FILE_HANDLE FileHandle,
         *((UINT8*)hob++) = 'S';
         *((UINT8*)hob++) = 1;
         *((UINT8*)hob++) = 0xFF & \
-                           (*(HashLogPpi->AmiHashLogExtend))(PeiServices, TreePpi, 0, 0, 0, 0, &event, &extra);
+                           (*(HashLogPpi->_HashLogExtendEvent))(PeiServices, TreePpi, 0, 0, 0, 0, &event, &extra);
     }
 
     return EFI_SUCCESS;
