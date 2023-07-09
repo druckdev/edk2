@@ -6,12 +6,6 @@
   VERSION_STRING                 = 1.0
   ENTRY_POINT                    = EntryPoint
 
-#
-# The following information is for reference only and not required by the build tools.
-#
-#  VALID_ARCHITECTURES           = IA32 X64 EBC
-#
-
 [Sources]
   UnmeasuredBoot.c
 
@@ -25,17 +19,10 @@
   MemoryAllocationLib
   PeiServicesLib
   PeimEntryPoint
-  HobLib
-
-[Guids]
-  gTestHobGuid
 
 [Ppis]
   gAmiTreePpiGuid
   gTrEE_HashLogExtendPpiGuid
-  gTcgTestPpiGuid
-  gUnmeasuredRockPpiGuid
 
 [Depex]
   gAmiTreePpiGuid
-
