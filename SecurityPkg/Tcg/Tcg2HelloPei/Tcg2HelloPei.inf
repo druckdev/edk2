@@ -32,7 +32,7 @@
 
 [Ppis]
   gAmiTreePpiGuid
-  gTrEE_HashLogExtendPpiGuid
+  gAmiHashLogPpiGuid
   gTcgTestPpiGuid
   gUnmeasuredRockPpiGuid
 

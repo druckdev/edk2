@@ -22,7 +22,7 @@
 
 [Ppis]
   gAmiTreePpiGuid
-  gTrEE_HashLogExtendPpiGuid
+  gAmiHashLogPpiGuid
 
 [Depex]
   gAmiTreePpiGuid

@@ -16,7 +16,7 @@
 
 extern EFI_GUID gTestHobGuid;
 extern EFI_GUID gAmiTreePpiGuid;
-extern EFI_GUID gTrEE_HashLogExtendPpiGuid;
+extern EFI_GUID gAmiHashLogPpiGuid;
 extern EFI_GUID gTcgTestPpiGuid;
 extern EFI_GUID gUnmeasuredRockPpiGuid;
 
@@ -27,9 +27,9 @@ EFI_PEI_NOTIFY_DESCRIPTOR AmiTreePpiDesc = {
     &gAmiTreePpiGuid,
     PpiNotifyCallback
 };
-EFI_PEI_NOTIFY_DESCRIPTOR TrEE_HashLogExtendPpiDesc = {
+EFI_PEI_NOTIFY_DESCRIPTOR AmiHashLogPpiDesc = {
     (EFI_PEI_PPI_DESCRIPTOR_NOTIFY_CALLBACK | EFI_PEI_PPI_DESCRIPTOR_TERMINATE_LIST),
-    &gTrEE_HashLogExtendPpiGuid,
+    &gAmiHashLogPpiGuid,
     PpiNotifyCallback
 };
 EFI_PEI_NOTIFY_DESCRIPTOR TcgTestPpiDesc = {
@@ -194,7 +194,7 @@ TPMHelloEntryPoint(IN EFI_PEI_FILE_HANDLE FileHandle,
     struct AmiHashLogExtendPpi* HashLogPpi;
     struct AmiTreePpi* TreePpi;
 
-    if (EFI_SUCCESS == LocateOrNotify(&TrEE_HashLogExtendPpiDesc, (VOID**)&HashLogPpi)
+    if (EFI_SUCCESS == LocateOrNotify(&AmiHashLogPpiDesc, (VOID**)&HashLogPpi)
             && EFI_SUCCESS == LocateOrNotify(&AmiTreePpiDesc, (VOID**)&TreePpi)) {
 
         UINT32 extra[4] = {0xFF92F000, 0, 0x4D1000, 0};

@@ -7,7 +7,7 @@
 #include <Library/PeiServicesLib.h>
 
 extern EFI_GUID gAmiTreePpiGuid;
-extern EFI_GUID gTrEE_HashLogExtendPpiGuid;
+extern EFI_GUID gAmiHashLogPpiGuid;
 
 #pragma pack (1)
 
@@ -33,7 +33,7 @@ EntryPoint(IN EFI_PEI_FILE_HANDLE FileHandle,
     struct AmiHashLogExtendPpi* HashLogPpi;
     void* TreePpi;
 
-    if (!PeiServicesLocatePpi(&gTrEE_HashLogExtendPpiGuid, 0, NULL, (VOID**)&HashLogPpi)
+    if (!PeiServicesLocatePpi(&gAmiHashLogPpiGuid, 0, NULL, (VOID**)&HashLogPpi)
         && !PeiServicesLocatePpi(&gAmiTreePpiGuid, 0, NULL, &TreePpi)) {
 
         UINT32 extra[4] = {0xFF92F000, 0, 0x4D1000, 0};
